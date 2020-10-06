@@ -1,0 +1,9 @@
+<div *ngIf="projectWrapper !== null">
+  <button (click)="onClickAddSequence()">Add sequence</button>
+  <ul>
+    <li *ngFor="let sequence of projectWrapper.project.sequences">
+      <div>{{ sequence.num }}</div>
+      <app-sequence [sequence]="sequence"></app-sequence>
+    </li>
+  </ul>
+</div>

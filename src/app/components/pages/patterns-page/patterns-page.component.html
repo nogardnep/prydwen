@@ -1,0 +1,6 @@
+<div *ngIf="projectWrapper !== null">
+  <button (click)="onClickAddPattern()">Add pattern</button>
+  <div>
+    <div *ngFor="let pattern of projectWrapper.project.patterns"></div>
+  </div>
+</div>

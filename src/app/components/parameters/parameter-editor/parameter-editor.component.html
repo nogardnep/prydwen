@@ -1,0 +1,9 @@
+<div>
+  <label [for]="key">{{ name }}</label>
+  <input *ngIf="!useSelector()" [id]="key" type="number" min="{{ min }}" max="{{ max }}"
+    [(ngModel)]="entity.parameters[this.key]" (ngModelChange)="onChange($event)" />
+  <select *ngIf="useSelector()" [id]="key" type="number" [(ngModel)]="entity.parameters[key]"
+    (ngModelChange)="onChange($event)">
+    <option *ngFor="let option of getSelectOptions()" [ngValue]="option.value">{{ option.text }}</option>
+  </select>
+</div>

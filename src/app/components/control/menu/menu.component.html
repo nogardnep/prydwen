@@ -1,0 +1,6 @@
+<h2>Menu</h2>
+<div>
+  <span *ngFor="let item of items">
+    <button (click)="onClickItem(item)">{{ item.title }}</button>
+  </span>
+</div>

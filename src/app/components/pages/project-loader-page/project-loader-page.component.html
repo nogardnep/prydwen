@@ -1,0 +1,9 @@
+<h2>Project loader</h2>
+<div *ngIf="loading">
+  <app-loading></app-loading>
+</div>
+<div>
+  <div *ngFor="let path of projectPaths">
+    <button (click)="onClickProject(path)">{{ path }}</button>
+  </div>
+</div>

@@ -1,0 +1,14 @@
+<div>
+  <span>
+    <label [for]="id + '-step'">Steps:</label>
+    <input [id]="id + '-step'" type="number" min="3" max="8" [(ngModel)]="model.timeSignature.step" />
+  </span>
+  <span>
+    <label [for]="id + '-beat'">Beats:</label>
+    <input [id]="id + '-beat'" type="number" min="1" max="16" [(ngModel)]="model.timeSignature.beat" />
+  </span>
+  <span>
+    <label [for]="id + '-mesure'">Mesures:</label>
+    <input [id]="id + '-mesure'" type="number" min="1" max="16" [(ngModel)]="model.timeSignature.mesure" />
+  </span>
+</div>

@@ -1,0 +1,18 @@
+<div>
+  <span>
+    <label [for]="id + '-tick'">Tick</label>
+    <input [id]="id + '-tick'" type="number" [min]="-range" [max]="range" [(ngModel)]="position.tick" />
+  </span>
+  <span>
+    <label [for]="id + '-beat'">Beat</label>
+    <input [id]="id + '-beat'" type="number" [min]="-range" [max]="range" [(ngModel)]="position.beat" />
+  </span>
+  <span>
+    <label [for]="id + '-mesure'">Mesure</label>
+    <input [id]="id + '-mesure'" type="number" [min]="-range" [max]="range" [(ngModel)]="position.mesure" />
+  </span>
+  <span>
+    <label [for]="id + '-turn'">Turn</label>
+    <input [id]="id + '-turn'" type="number" [min]="-range" [max]="range" [(ngModel)]="position.turn" />
+  </span>
+</div>

@@ -1,0 +1,14 @@
+<h2>Sequencer</h2>
+<div *ngIf="selectedSequence !== null">
+
+  <button (click)="onClickPlay()">Play</button>
+  <button (click)="onClickPause()">Pause</button>
+  <button (click)="onClickStop()">Stop</button>
+
+  <app-position *ngIf="sequencerPosition !== null" id="sequencer-player" [position]="sequencerPosition"></app-position>
+  <app-sequence [sequence]="selectedSequence"></app-sequence>
+</div>
+
+<div *ngIf="selectedSequence === null">
+  <p>Please select a sequence so as to use the sequencer</p>
+</div>

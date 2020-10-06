@@ -1,0 +1,16 @@
+<h2>Project</h2>
+<button (click)="onClickOpenProject()">Open project</button>
+<button (click)="onClickCreateProject()">Create project</button>
+
+
+<div *ngIf="projectWrapper !== null">
+  <div>location: {{ projectWrapper.path }}</div>
+  <div>
+    <div>
+      <label for="project-name">Name</label>
+      <input id="project-name" type="text" [(ngModel)]="projectWrapper.project.name" />
+    </div>
+  </div>
+  <button (click)="onClickSaveProject()">Save</button>
+  <button (click)="onClickDeleteProject()">Delete project</button>
+</div>
