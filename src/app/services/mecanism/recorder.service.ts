@@ -1,11 +1,13 @@
+import { ResourcesManagerService } from './../managers/resources-manager.service';
+import { config } from 'src/config/config';
+import { Pattern } from './../../../api/entities/Pattern';
+import { UtilsService } from './../control/utils.service';
 import { Subject } from 'rxjs';
 import { ProjectManagerService } from './../managers/project-manager.service';
 import { ServerService } from './../server/server.service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 declare var MediaRecorder: any;
-
-const recordExtension = 'wav';
 
 @Injectable({
   providedIn: 'root',
@@ -17,18 +19,23 @@ export class RecorderService {
   private armed = false;
   private recording = false;
   private mesureCountdown = 0;
+  private armedPattern: Pattern = null;
 
   recordingSubject = new Subject<boolean>();
   armedSubject = new Subject<boolean>();
+  armedPatternSubject = new Subject<Pattern>();
 
   constructor(
     private serverService: ServerService,
-    private projectManagerService: ProjectManagerService
+    private projectManagerService: ProjectManagerService,
+    private utilsService: UtilsService,
+    private resourcesManagerService: ResourcesManagerService
   ) {
     this.init();
   }
 
   private start(): void {
+    console.log('start');
     this.setRecording(true);
     this.setArmed(false);
     this.armed = false;
@@ -46,22 +53,31 @@ export class RecorderService {
   }
 
   check(): void {
-    if (this.armed) {
-      if (this.isReadyForRecording()) {
-        this.start();
-      } else {
-        this.mesureCountdown--;
-      }
+    if (this.armed && this.mesureCountdown <= 0) {
+      this.start();
     }
   }
 
-  arm(useCountdown: boolean): void {
-    if (useCountdown) {
-      this.mesureCountdown = 1;
-      this.setArmed(true);
+  decreaseCountdown(): void {
+    this.mesureCountdown--;
+  }
+
+  arm(useCountdown: boolean): boolean {
+    let ready = false;
+
+    if (this.armedPattern === null) {
+      this.utilsService.inform('Please arm a pattern');
     } else {
-      this.start();
+      if (useCountdown) {
+        this.mesureCountdown = 1;
+      }
+
+      this.setArmed(true);
+
+      ready = true;
     }
+
+    return ready;
   }
 
   emitRecording(): void {
@@ -70,6 +86,15 @@ export class RecorderService {
 
   emitArmed(): void {
     this.armedSubject.next(this.armed);
+  }
+
+  emitArmedPattern(): void {
+    this.armedPatternSubject.next(this.armedPattern);
+  }
+
+  setArmedPattern(pattern: Pattern): void {
+    this.armedPattern = pattern;
+    this.emitArmedPattern();
   }
 
   private init(callback?: () => any): void {
@@ -86,14 +111,7 @@ export class RecorderService {
         });
 
         this.mediaRecorder.addEventListener('stop', () => {
-          console.log(this.audioChunks.length);
-          const blob = new Blob(this.audioChunks, {
-            type: 'audio/' + recordExtension,
-          });
-          const url = URL.createObjectURL(blob);
-          const audio = new Audio(url);
-          audio.play();
-          this.sendToServer(blob);
+          this.onRecordEnd();
         });
 
         if (callback !== undefined) {
@@ -106,8 +124,14 @@ export class RecorderService {
       });
   }
 
-  private isReadyForRecording(): boolean {
-    return this.mesureCountdown <= 0;
+  private onRecordEnd(): void {
+    const blob = new Blob(this.audioChunks, {
+      type: 'audio/' + config.recording.audioExtension,
+    });
+    const url = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+    audio.play();
+    this.sendToServer(blob);
   }
 
   private setArmed(armed: boolean): void {
@@ -121,12 +145,34 @@ export class RecorderService {
   }
 
   private sendToServer(blob: Blob): void {
-    const name = 'test';
+    let name = '';
 
-    this.serverService.storeFile(
-      new File([blob], name + '.' + recordExtension),
-      // blob,
-      this.projectManagerService.getSelectedProjectWrapper().path
-    );
+    if (this.armedPattern.name) {
+      name += this.armedPattern.name;
+    }
+
+    name += this.armedPattern.id;
+
+    const path =
+      this.projectManagerService.getSelectedProjectWrapper().path +
+      '/' +
+      name +
+      '.' +
+      config.recording.audioExtension;
+
+    this.serverService
+      .storeFile(
+        new File([blob], name + '.' + config.recording.audioExtension),
+        // blob,
+        this.projectManagerService.getSelectedProjectWrapper().path
+      )
+      .then(() => {
+        const newResouce = this.resourcesManagerService.makeResource(path);
+        this.armedPattern.audio.resource = newResouce;
+        this.projectManagerService.updateResources();
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 }

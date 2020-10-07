@@ -1,11 +1,10 @@
+import { EntityWithNumber } from './EntityWithNumber';
 import { ParametersModel } from './../parameters/Parameter';
-import { Entity } from './Entity';
+import { EntityWithId } from './EntityWithId';
 import { Resource } from './Resource';
 
-export interface Track extends Entity {
+export interface Track extends EntityWithNumber, EntityWithId {
   name: string;
-  num: number;
-  bank: number;
   audio: {
     resource: Resource;
   };

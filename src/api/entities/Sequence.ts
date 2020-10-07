@@ -1,9 +1,9 @@
-import { EntityWithNumber } from './EntityWithNumber';
 import { ParametersModel } from './../parameters/Parameter';
-import { TimeSignature } from '../utils/TimeSignature';
+import { EntityWithId } from './EntityWithId';
+import { EntityWithNumber } from './EntityWithNumber';
 import { Sheet } from './Sheet';
 
-export interface Sequence extends Sheet, EntityWithNumber {
+export interface Sequence extends Sheet, EntityWithNumber , EntityWithId{
   name: string;
 }
 

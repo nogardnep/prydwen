@@ -20,5 +20,8 @@ export const config = {
     ticksByBeat: 12,
   },
   uploadId: 'upload',
-  uploadFolder: 'uploads' // TODO: keep?
+  uploadFolder: 'uploads', // TODO: keep?
+  recording: {
+    audioExtension: 'wav',
+  },
 };

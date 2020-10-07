@@ -1,3 +1,5 @@
+import { RecorderService } from './../../../services/mecanism/recorder.service';
+import { PatternWrapper } from './../../../../api/wrappers/PatternWrapper';
 import { Resource } from './../../../../api/entities/Resource';
 import { ProjectManagerService } from './../../../services/managers/project-manager.service';
 import { ResourcesManagerService } from './../../../services/managers/resources-manager.service';
@@ -16,16 +18,18 @@ import { Component, OnInit, Input, OnDestroy } from '@angular/core';
   styleUrls: ['./pattern.component.scss'],
 })
 export class PatternComponent implements OnInit, OnDestroy {
-  @Input() pattern: Pattern;
+  @Input() patternWrapper: PatternWrapper;
   availableResources: Resource[];
+  armedForRecording = false;
 
   private availableResourcesSubscription: Subscription;
+  private armedPatternForRecordingSubscription: Subscription;
 
   constructor(
     private selectionService: SelectionService,
-    private projectManagerService: ProjectManagerService
-  ) {
-  }
+    private projectManagerService: ProjectManagerService,
+    private recorderService: RecorderService
+  ) {}
 
   ngOnInit(): void {
     this.availableResourcesSubscription = this.projectManagerService.availableResourcesSubject.subscribe(
@@ -33,24 +37,33 @@ export class PatternComponent implements OnInit, OnDestroy {
         this.availableResources = resources;
       }
     );
+    this.projectManagerService.emitAvailableResources();
 
-      // console.log(this.pattern.audio.resource.path)
-
+    this.armedPatternForRecordingSubscription = this.recorderService.armedPatternSubject.subscribe(
+      (pattern: Pattern) => {
+        if (pattern.id !== this.patternWrapper.pattern.id) {
+          this.armedForRecording = false;
+        }
+      }
+    );
     this.projectManagerService.emitAvailableResources();
   }
 
   ngOnDestroy(): void {
     this.availableResourcesSubscription.unsubscribe();
+    this.armedPatternForRecordingSubscription.unsubscribe();
   }
 
   getParametersModel(): ParametersModel {
     return patternParametersModel;
   }
 
-  onChangeResource(resource: Resource): void {
-    // console.log(resource.path);
-    // console.log(this.pattern.audio.resource.path)
+  onClickArmForRecording(): void {
+    this.armedForRecording = true;
+    this.recorderService.setArmedPattern(this.patternWrapper.pattern);
+  }
 
-    // this.pattern.audio.resource = resource
+  getIntputId(label: string): string {
+    return 'pattern-' + this.patternWrapper.pattern.id + '-' + label;
   }
 }

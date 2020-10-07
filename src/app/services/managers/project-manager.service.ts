@@ -1,3 +1,4 @@
+import { ResourcesManagerService } from './resources-manager.service';
 import { EntityWithNumber } from './../../../api/entities/EntityWithNumber';
 import { Entity } from './../../../api/entities/Entity';
 import { Injectable } from '@angular/core';
@@ -22,7 +23,8 @@ export class ProjectManagerService {
 
   constructor(
     private serverService: ServerService,
-    private uiService: UiService
+    private uiService: UiService,
+    private resourcesManagerService: ResourcesManagerService
   ) {}
 
   loadProject(path: string): Promise<Project> {
@@ -43,7 +45,6 @@ export class ProjectManagerService {
               name: 'Unnamed',
               patterns: [],
               sequences: [],
-              parameters: {},
             };
 
             // TODO: addSequence
@@ -52,7 +53,7 @@ export class ProjectManagerService {
           this.selectedProjectWrapper = {
             path,
             project,
-          } as ProjectWrapper;
+          };
 
           this.emitSelectedProjectWrapper();
           this.updateResources();
@@ -77,29 +78,13 @@ export class ProjectManagerService {
     return this.selectedProjectWrapper;
   }
 
-  addPattern(): void {
+  addPattern(): Pattern {
     const project = this.selectedProjectWrapper.project;
-    let num: number;
 
-    if (project.patterns === undefined) {
-      project.patterns = [];
-      num = 1;
-    } else {
-      let maxNumFound = 0;
-
-      project.patterns.forEach((pattern: Pattern) => {
-        if (pattern.num > maxNumFound) {
-          maxNumFound = pattern.num;
-        }
-      });
-
-      num = maxNumFound + 1;
-    }
-
-    project.patterns.push({
+    const newPattern = {
       id: this.makeId(),
       name: '',
-      num,
+      num: this.makeNum(project.patterns),
       bank: 1,
       timeSignature: {
         step: 4,
@@ -113,17 +98,19 @@ export class ProjectManagerService {
         resource: null,
       },
       parameters: {},
-    });
+    };
+
+    project.patterns.push(newPattern);
+
+    return newPattern;
   }
 
-  addSequence(): void {
+  addSequence(): Sequence {
     const project = this.selectedProjectWrapper.project;
-
-    const num = this.makeNum(project.sequences);
 
     // TODO: get bpm of the last sequence
 
-    project.sequences.push({
+    const newSequence = {
       id: this.makeId(),
       name: '',
       num: this.makeNum(project.sequences),
@@ -134,7 +121,11 @@ export class ProjectManagerService {
         mesure: 1,
       },
       parameters: {},
-    });
+    };
+
+    project.sequences.push(newSequence);
+
+    return newSequence;
   }
 
   removeSequence(num, bank): void {
@@ -213,11 +204,7 @@ export class ProjectManagerService {
           const resources: Resource[] = [];
 
           items.forEach((item: string) => {
-            resources.push({
-              path: item,
-              local: true,
-              src: this.serverService.makeSrcFor(item),
-            } as Resource);
+            resources.push(this.resourcesManagerService.makeResource(item));
           });
 
           resolve(resources);

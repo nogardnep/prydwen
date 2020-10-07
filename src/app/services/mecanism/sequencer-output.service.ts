@@ -12,6 +12,7 @@ export class SequencerOutputService implements SequencerOutputs {
   private playing = false;
   private position: Position = null;
   private positionWrapper = new PositionWrapper(null, null);
+  private lastPosition: Position = null;
 
   playingSubject = new Subject<boolean>();
   positionSubject = new Subject<Position>();
@@ -23,14 +24,17 @@ export class SequencerOutputService implements SequencerOutputs {
 
     this.positionWrapper.setPosition(position);
 
-    if (this.positionWrapper.onMesure()) {
-      this.recorderService.check();
+    if (this.lastPosition !== null && position.turn > this.lastPosition.turn) {
+      this.recorderService.decreaseCountdown();
     }
 
+    this.recorderService.check();
+
     this.emitPosition();
+    this.lastPosition = position;
   }
 
-  setPlaying(playing): void {
+  setPlaying(playing: boolean): void {
     this.playing = playing;
     this.emitPlaying();
   }

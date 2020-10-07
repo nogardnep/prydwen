@@ -1,10 +1,18 @@
-import { Resource, ResourceTypes } from './../../../api/entities/Resource';
+import { ServerService } from './../server/server.service';
 import { Injectable } from '@angular/core';
+import { Resource } from './../../../api/entities/Resource';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ResourcesManagerService {
-  constructor() {}
+  constructor(private serverService: ServerService) {}
 
+  makeResource(path: string): Resource {
+    return {
+      path,
+      local: true,
+      src: this.serverService.makeSrcFor(path),
+    };
+  }
 }

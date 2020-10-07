@@ -10,10 +10,6 @@ import { ResourceType } from './../../../api/entities/Resource';
 export class ServerService {
   constructor(private httpClient: HttpClient) {}
 
-  makeSrcFor(absolutePath: string): string {
-    return this.makeUrl(config.routes.file) + '/src/' + absolutePath;
-  }
-
   getProjectFolders(): Promise<string[]> {
     return new Promise((resolve, reject) => {
       this.httpClient
@@ -84,21 +80,12 @@ export class ServerService {
   }
 
   storeFile(file: File, path: string): Promise<any> {
-    // const headers = new HttpHeaders({
-    //   'Content-Type': 'application/json',
-    //   Accept: 'application/json',
-    // });
-
-    console.log(file);
-
     const formData = new FormData();
     formData.append(config.uploadId, file, file.name);
 
     const headers = new HttpHeaders();
     headers.append('Content-Type', 'undefined');
     headers.append('Accept', 'application/json');
-
-    // const options = new RequestOptions({ headers: headers });
 
     return new Promise((resolve, reject) => {
       this.httpClient
@@ -107,7 +94,6 @@ export class ServerService {
           formData,
           {
             headers,
-            // responseType: 'blob' as 'json',
           }
         )
         .subscribe(
@@ -122,7 +108,12 @@ export class ServerService {
     });
   }
 
-  private makeUrl(path: string): string {
+
+  makeSrcFor(absolutePath: string): string {
+    return this.makeUrl(config.routes.file) + '/src/' + absolutePath;
+  }
+
+  makeUrl(path: string): string {
     return (
       config.url + ':' + config.backendPort + '/' + config.apiRoot + '/' + path
     );

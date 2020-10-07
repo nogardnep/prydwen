@@ -11,7 +11,7 @@ export class Sequencer implements ISequencer {
   private clock: Clock;
   private positionWrapper: PositionWrapper;
   private metronome: Metronome;
-  private playing: boolean = false;
+  private playing = false;
 
   constructor(
     private audioPlayer: AudioPlayer,

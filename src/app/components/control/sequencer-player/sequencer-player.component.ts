@@ -93,7 +93,6 @@ export class SequencerPlayerComponent implements OnInit, OnDestroy {
   onClickRecord(): void {
     if (!this.recorderArmed && !this.recording) {
       this.recorderService.arm(this.useCountdown);
-      this.sequencerService.play();
     }
   }
 

@@ -1,8 +1,8 @@
-import { Sequence } from './Sequence';
+import { EntityWithId } from './EntityWithId';
 import { Pattern } from './Pattern';
-import { Entity } from './Entity';
+import { Sequence } from './Sequence';
 
-export interface Project extends Entity {
+export interface Project extends EntityWithId {
   name: string;
   patterns: Pattern[];
   sequences: Sequence[];

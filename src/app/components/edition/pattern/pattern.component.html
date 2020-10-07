@@ -1,16 +1,30 @@
-<input type="text" [(ngModel)]="pattern.name" />
-<app-parameters-editor [parametersModel]="getParametersModel()" [entity]="pattern"></app-parameters-editor>
+<input type="text" [(ngModel)]="patternWrapper.pattern.name" />
+<app-parameters-editor [parametersModel]="getParametersModel()" [entity]="patternWrapper.pattern">
+</app-parameters-editor>
 
-<!-- <select (change)="onChangeResource($event.target.value)">
-  <option [value]="null">Empty</option>
-  <option *ngFor="let resource of availableResources" [value]="resource">{{ resource.path }}</option>
-</select> -->
+<div>
+  <div>
+    <label [for]="getIntputId('arm-for-playing')">Arm for playing</label>
+    <input [id]="getIntputId('arm-for-playing')" type="checkbox" [(ngModel)]="patternWrapper.armedForPlaying">
+  </div>
+  <div>
+    <strong *ngIf="armedForRecording">Armed</strong>
+    <button *ngIf="!armedForRecording" [id]="getIntputId('arm-for-recording')" (click)="onClickArmForRecording()">Arm
+      for recording</button>
+  </div>
+</div>
 
-<div *ngIf="pattern.audio.resource !== null">Audio: {{ pattern.audio.resource.path }}</div>
+<div *ngIf=" patternWrapper.pattern.audio.resource !==null">Audio: {{ patternWrapper.pattern.audio.resource.path }}
+</div>
 
-<select [(ngModel)]="pattern.audio.resource" (ngModelChange)="onChangeResource($event)">
-  <option [ngValue]="null" [selected]="pattern.audio.resource === null">Empty</option>
+<select [(ngModel)]="patternWrapper.pattern.audio.resource" (ngModelChange)="onChangeResource($event)">
+  <option [ngValue]="null" [selected]="patternWrapper.pattern.audio.resource === null">Empty</option>
   <option *ngFor="let resource of availableResources" [ngValue]="resource"
-    [selected]="pattern.audio.resource !== null && pattern.audio.resource.path === resource.path">{{resource.path}}
+    [selected]="patternWrapper.pattern.audio.resource !== null && patternWrapper.pattern.audio.resource.path === resource.path">
+    {{resource.path}}
   </option>
 </select>
+
+<div *ngIf="patternWrapper.pattern.audio.resource !== null">
+  <app-audio [src]="patternWrapper.pattern.audio.resource.src"></app-audio>
+</div>
