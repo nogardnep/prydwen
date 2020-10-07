@@ -14,9 +14,11 @@ export class OutputsService {
   private audioPlayer: IAudioPlayer;
   private sequencer: ISequencer;
 
-  constructor(private sequencerOutputService: SequencerOutputService) {
+  constructor(
+    private sequencerOutputService: SequencerOutputService
+    ) {
     this.audioPlayer = new AudioPlayer();
-    this.sequencer = new Sequencer(this.sequencerOutputService);
+    this.sequencer = new Sequencer(this.audioPlayer, this.sequencerOutputService);
   }
 
   getAudioPlayer(): IAudioPlayer {

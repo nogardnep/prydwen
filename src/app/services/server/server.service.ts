@@ -1,9 +1,8 @@
-import { ProjectWrapper } from './../../../api/wrappers/ProjectWrapper';
-import { Project } from './../../../api/entities/Project';
-import { Resource, ResourceType } from './../../../api/entities/Resource';
-import { config } from 'src/config/config';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { config } from 'src/config/config';
+import { Project } from './../../../api/entities/Project';
+import { ResourceType } from './../../../api/entities/Resource';
 
 @Injectable({
   providedIn: 'root',
@@ -33,13 +32,10 @@ export class ServerService {
 
   getProjectData(absolutePath: string): Promise<Project> {
     const url = this.makeUrl(config.routes.project) + '/' + absolutePath;
-    console.log(url);
 
     return new Promise((resolve, reject) => {
       this.httpClient.get<Project>(url).subscribe(
         (response) => {
-          console.log(response);
-
           resolve(response);
         },
         (error) => {
@@ -49,12 +45,11 @@ export class ServerService {
     });
   }
 
-  saveProjectData(projectWrapper: ProjectWrapper): Promise<Project> {
+  saveProjectData(project: object, path: string): Promise<Project> {
     return new Promise((resolve, reject) => {
-      const url =
-        this.makeUrl(config.routes.project) + '/' + projectWrapper.path;
+      const url = this.makeUrl(config.routes.project) + '/' + path;
 
-      this.httpClient.post<Project>(url, projectWrapper.project).subscribe(
+      this.httpClient.post<Project>(url, project).subscribe(
         (response) => {
           resolve(response);
         },
@@ -78,7 +73,45 @@ export class ServerService {
         )
         .subscribe(
           (response) => {
-            console.log(response);
+            resolve(response);
+          },
+          (error) => {
+            this.printError(error);
+            reject(error);
+          }
+        );
+    });
+  }
+
+  storeFile(file: File, path: string): Promise<any> {
+    // const headers = new HttpHeaders({
+    //   'Content-Type': 'application/json',
+    //   Accept: 'application/json',
+    // });
+
+    console.log(file);
+
+    const formData = new FormData();
+    formData.append(config.uploadId, file, file.name);
+
+    const headers = new HttpHeaders();
+    headers.append('Content-Type', 'undefined');
+    headers.append('Accept', 'application/json');
+
+    // const options = new RequestOptions({ headers: headers });
+
+    return new Promise((resolve, reject) => {
+      this.httpClient
+        .post<any>(
+          this.makeUrl(config.routes.file) + '/path/' + path,
+          formData,
+          {
+            headers,
+            // responseType: 'blob' as 'json',
+          }
+        )
+        .subscribe(
+          (response) => {
             resolve(response);
           },
           (error) => {

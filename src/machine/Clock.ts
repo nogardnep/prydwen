@@ -8,12 +8,15 @@ export class Clock {
   }
 
   start(): void {
+    stop();
     this.expected = Date.now();
     this.moveOn();
   }
 
   stop(): void {
-    clearTimeout(this.timeout);
+    if (this.timeout !== null) {
+      clearTimeout(this.timeout);
+    }
   }
 
   private moveOn(): void {

@@ -1,6 +1,6 @@
-import { TimeSignature } from './../api/utils/TimeSignature';
-import { config } from './../config/config';
-import { Position } from './../api/utils/Position';
+import { Position } from './../utils/Position';
+import { TimeSignature } from '../utils/TimeSignature';
+import { config } from '../../config/config';
 
 export class PositionWrapper {
   constructor(
@@ -43,15 +43,15 @@ export class PositionWrapper {
     // TODO: restore complex behaviour
 
     if (progression.tick !== undefined) {
-      this.position.tick += 1;
+      this.position.tick += progression.tick;
     }
 
     if (progression.beat !== undefined) {
-      this.position.beat += 1;
+      this.position.beat += progression.beat;
     }
 
     if (progression.mesure !== undefined) {
-      this.position.mesure += 1;
+      this.position.mesure += progression.mesure;
     }
 
     if (this.position.tick < 0) {
@@ -81,6 +81,10 @@ export class PositionWrapper {
 
   getPosition(): Position {
     return this.position;
+  }
+
+  setPosition(position: Position): void {
+    this.position = position;
   }
 
   isSameAs(position: Position): boolean {

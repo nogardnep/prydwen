@@ -19,4 +19,6 @@ export const config = {
   sequencer: {
     ticksByBeat: 12,
   },
+  uploadId: 'upload',
+  uploadFolder: 'uploads' // TODO: keep?
 };

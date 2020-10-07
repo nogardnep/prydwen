@@ -3,6 +3,8 @@ import { ExplorerManager } from '../utils/explorer-manager';
 import { LogManager, LogType } from '../utils/log-manager';
 import { resourceTypes } from './../../api/entities/Resource';
 
+const fs = require('fs-extra');
+
 export class FileController {
   static getAll(req: Request, res: Response, next: NextFunction): void {
     const path = req.params[0];
@@ -20,8 +22,14 @@ export class FileController {
   }
 
   static getSrc(req: Request, res: Response, next: NextFunction): void {
-    const absolutePath = req.params[0];
-    res.sendFile(absolutePath);
+    const path = req.params[0];
+    res.sendFile(path);
+  }
+
+  static storeFile(req: Request, res: Response, next: NextFunction): void {
+    const path = req.params[0];
+
+    res.status(200).json(path);
   }
 
   private static makeExtensions(typeKeys: string): string[] {

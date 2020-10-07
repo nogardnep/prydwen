@@ -1,15 +1,22 @@
+import { PositionWrapper } from '../api/wrappers/PositionWrapper';
+import { Metronome } from './../api/machine/Metronome';
+import { AudioPlayer } from './../api/machine/AudioPlayer';
 import { Sequencer as ISequencer } from '../api/machine/Sequencer';
 import { Position } from '../api/utils/Position';
 import { SequencerOutputs } from './../api/machine/SequencerOutputs';
 import { TimeSignature } from './../api/utils/TimeSignature';
-import { PositionWrapper } from './../api/wrappers/PositionWrapper.model';
 import { Clock } from './Clock';
 
 export class Sequencer implements ISequencer {
   private clock: Clock;
   private positionWrapper: PositionWrapper;
+  private metronome: Metronome;
+  private playing: boolean = false;
 
-  constructor(private outputs: SequencerOutputs) {
+  constructor(
+    private audioPlayer: AudioPlayer,
+    private outputs: SequencerOutputs
+  ) {
     this.positionWrapper = new PositionWrapper(
       {
         tick: 0,
@@ -24,39 +31,70 @@ export class Sequencer implements ISequencer {
       } as TimeSignature
     );
 
+    this.metronome = {
+      volume: 1,
+      muted: false,
+    };
+
     this.clock = new Clock(500, () => {
-      console.log('tick');
       this.move();
     });
-  }
-
-  move(): void {
-    this.positionWrapper.move({
-      tick: 12,
-    } as Position);
 
     this.sendPosition();
   }
 
+  move(): void {
+    this.sendPosition();
+
+    if (!this.metronome.muted) {
+      if (this.positionWrapper.onMesure()) {
+        this.audioPlayer.play('assets/metronome/metronome-mesure.wav');
+      } else if (this.positionWrapper.onBeat()) {
+        this.audioPlayer.play('assets/metronome/metronome-beat.wav');
+      }
+    }
+
+    this.positionWrapper.move({
+      tick: 12,
+    } as Position);
+  }
+
   play(): void {
+    this.stop();
+    this.setPlaying(true);
     this.clock.start();
   }
 
   stop(): void {
+    this.setPlaying(false);
     this.clock.stop();
     this.positionWrapper.initPosition();
     this.sendPosition();
   }
 
   pause(): void {
+    this.setPlaying(false);
     this.clock.stop();
   }
 
   switchMetronome(muted: boolean): void {
-    // TODO
+    this.metronome.muted = muted;
+  }
+
+  setMetronomeVolume(volume: number): void {
+    this.metronome.volume = volume;
+  }
+
+  private setPlaying(playing: boolean): void {
+    this.playing = playing;
+    this.sendPlaying();
   }
 
   private sendPosition(): void {
     this.outputs.setPosition({ ...this.positionWrapper.getPosition() });
+  }
+
+  private sendPlaying(): void {
+    this.outputs.setPlaying(this.playing);
   }
 }

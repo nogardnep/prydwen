@@ -1,6 +1,10 @@
+<h1>Patterns</h1>
 <div *ngIf="projectWrapper !== null">
   <button (click)="onClickAddPattern()">Add pattern</button>
-  <div>
-    <div *ngFor="let pattern of projectWrapper.project.patterns"></div>
-  </div>
+  <ul>
+    <li *ngFor="let pattern of projectWrapper.project.patterns">
+      <div>{{ pattern.num }}</div>
+      <app-pattern [pattern]="pattern"></app-pattern>
+    </li>
+  </ul>
 </div>

@@ -3,6 +3,7 @@ import { config } from '../config/config';
 const express = require('express');
 const bodyParser = require('body-parser');
 
+
 const app = express();
 
 app.use(bodyParser.json({ limit: '50mb' }));
@@ -11,18 +12,31 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use((req: Request, res: Response, next: NextFunction) => {
   // TODO: choose
   //res.header("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    'Access-Control-Allow-Origin',
-    config.url + ':' + config.frontendPort
-  );
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT');
+  res.header('Access-Control-Allow-Origin', '*');
+  // res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT, OPTIONS');
   res.header(
     'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization, Content-Length'
   );
   next();
 });
+
+// app.post('/api/file/path/*', upload.single('streamfile'), function (
+//   req,
+//   res,
+//   next
+// ) {
+//   console.log(req.file);
+//   // req.file is the `avatar` file
+//   // req.body will hold the text fields, if there were any
+// });
+
+// router.post('/path/*', upload.array(), function (req, res, next) {
+//   // req.body contains the text fields
+
+//   console.log(req.body)
+// });
 
 app.use(
   '/' + config.apiRoot + '/' + config.routes.project,

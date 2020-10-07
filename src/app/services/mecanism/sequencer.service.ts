@@ -1,20 +1,26 @@
-import { Position } from './../../../api/utils/Position';
-import { SequencerOutputs } from './../../../api/machine/SequencerOutputs';
-import { OutputsService } from './../io/outputs.service';
-import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { OutputsService } from './../io/outputs.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SequencerService {
+  metronomeMuted = false;
 
-  constructor(
-    private outputsService: OutputsService
-    ) {}
+  private metronomeMutedSubject = new Subject<boolean>();
+
+  constructor(private outputsService: OutputsService) {}
+
+  switchMetronome(muted: boolean): void {
+    this.outputsService.getSequencer().switchMetronome(muted);
+  }
+
+  setMetronomeVolume(volume: number): void {
+    this.outputsService.getSequencer().setMetronomeVolume(volume);
+  }
 
   play(): void {
-    console.log(this.outputsService);
     this.outputsService.getSequencer().play();
   }
 

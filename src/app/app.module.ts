@@ -25,6 +25,7 @@ import { TimeSignatureComponent } from './components/utils/time-signature/time-s
 import { FilenamePipe } from './pipes/filename.pipe';
 import { appRoutes } from './routerConfig';
 import { SequencerPlayerComponent } from './components/control/sequencer-player/sequencer-player.component';
+import { PatternComponent } from './components/edition/pattern/pattern.component';
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import { SequencerPlayerComponent } from './components/control/sequencer-player/
     TimeSignatureComponent,
     SequencerPlayerComponent,
     PositionComponent,
+    PatternComponent,
   ],
   imports: [
     RouterModule.forRoot(appRoutes),

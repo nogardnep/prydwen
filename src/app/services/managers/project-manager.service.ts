@@ -1,3 +1,5 @@
+import { EntityWithNumber } from './../../../api/entities/EntityWithNumber';
+import { Entity } from './../../../api/entities/Entity';
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Pattern } from './../../../api/entities/Pattern';
@@ -12,7 +14,6 @@ import { UiService } from './../ui/ui.service';
   providedIn: 'root',
 })
 export class ProjectManagerService {
-  private patternNumCounter = 1;
   private selectedProjectWrapper: ProjectWrapper = null;
   private availableResources: Resource[] = [];
 
@@ -38,10 +39,14 @@ export class ProjectManagerService {
             project = projectFound;
           } else {
             project = {
+              id: this.makeId(),
               name: 'Unnamed',
-            } as Project;
+              patterns: [],
+              sequences: [],
+              parameters: {},
+            };
 
-            // TODO: Add sequence
+            // TODO: addSequence
           }
 
           this.selectedProjectWrapper = {
@@ -68,44 +73,68 @@ export class ProjectManagerService {
     this.availableResourcesSubject.next(this.availableResources);
   }
 
-  addPattern(): void {
-    // TODO: check for last num
-
-    this.selectedProjectWrapper.project.patterns.push({
-      num: this.patternNumCounter,
-      bank: 1,
-    } as Pattern);
-
-    this.patternNumCounter++;
+  getSelectedProjectWrapper(): ProjectWrapper {
+    return this.selectedProjectWrapper;
   }
 
-  addSequence(): void {
+  addPattern(): void {
     const project = this.selectedProjectWrapper.project;
     let num: number;
 
-    if (project.sequences === undefined) {
-      project.sequences = [];
+    if (project.patterns === undefined) {
+      project.patterns = [];
       num = 1;
     } else {
       let maxNumFound = 0;
 
-      project.sequences.forEach((sequence: Sequence) => {
-        if (sequence.num > maxNumFound) {
-          maxNumFound = sequence.num;
+      project.patterns.forEach((pattern: Pattern) => {
+        if (pattern.num > maxNumFound) {
+          maxNumFound = pattern.num;
         }
       });
-
-      console.log(maxNumFound);
 
       num = maxNumFound + 1;
     }
 
+    project.patterns.push({
+      id: this.makeId(),
+      name: '',
+      num,
+      bank: 1,
+      timeSignature: {
+        step: 4,
+        beat: 4,
+        mesure: 1,
+      },
+      audio: {
+        resource: null,
+      },
+      video: {
+        resource: null,
+      },
+      parameters: {},
+    });
+  }
+
+  addSequence(): void {
+    const project = this.selectedProjectWrapper.project;
+
+    const num = this.makeNum(project.sequences);
+
     // TODO: get bpm of the last sequence
 
     project.sequences.push({
-      num,
+      id: this.makeId(),
+      name: '',
+      num: this.makeNum(project.sequences),
       bank: 1,
-    } as Sequence);
+      timeSignature: {
+        step: 4,
+        beat: 4,
+        mesure: 1,
+      },
+      parameters: {},
+    });
   }
 
   removeSequence(num, bank): void {
@@ -122,7 +151,10 @@ export class ProjectManagerService {
 
   saveProject(): void {
     // TODO
-    this.serverService.saveProjectData(this.selectedProjectWrapper);
+    this.serverService.saveProjectData(
+      this.selectedProjectWrapper.project,
+      this.selectedProjectWrapper.path
+    );
   }
 
   deleteProject(): void {
@@ -146,6 +178,31 @@ export class ProjectManagerService {
           reject(message);
         });
     });
+  }
+
+  private makeId(): number {
+    return Math.round(Math.random() * 100000);
+  }
+
+  private makeNum(entities: EntityWithNumber[]): number {
+    let num: number;
+
+    if (entities === undefined) {
+      entities = [];
+      num = 1;
+    } else {
+      let maxNumFound = 0;
+
+      entities.forEach((entity: EntityWithNumber) => {
+        if (entity.num > maxNumFound) {
+          maxNumFound = entity.num;
+        }
+      });
+
+      num = maxNumFound + 1;
+    }
+
+    return num;
   }
 
   private getAudios(): Promise<Resource[]> {

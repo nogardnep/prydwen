@@ -1,6 +1,5 @@
 import { TimeSignature } from './../utils/TimeSignature';
-import { Entity } from './Entity';
 
-export interface Sheet extends Entity {
+export interface Sheet {
   timeSignature: TimeSignature;
 }
