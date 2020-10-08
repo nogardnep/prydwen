@@ -1,7 +1,9 @@
-import { ProjectManagerService } from '../../../services/managers/project-manager.service';
-import { ServerService } from '../../../services/server/server.service';
-import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { ProjectManagerService } from '../../../services/managers/project-manager.service';
+import { pages } from '../../../../config/pages';
+import { ProjectsDataService } from './../../../services/data/projects-data.service';
 
 @Component({
   selector: 'app-project-loader-page',
@@ -13,20 +15,26 @@ export class ProjectLoaderPageComponent implements OnInit {
   loading = true;
 
   constructor(
-    private serverService: ServerService,
+    private projectsDataService: ProjectsDataService,
     private projectManagerService: ProjectManagerService,
-    private location: Location
+    private location: Location,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.serverService.getProjectFolders().then((items: string[]) => {
+    this.projectsDataService.getProjectFolders().then((items: string[]) => {
       this.projectPaths = items;
       this.loading = false;
     });
   }
 
   onClickProject(path: string): void {
-    this.projectManagerService.loadProject(path);
+    this.projectManagerService.loadProject(path).then(() => {
+      this.router.navigate(['/' + pages.sequences.path]);
+    });
+  }
+
+  onClickCancel(): void {
     this.location.back();
   }
 }

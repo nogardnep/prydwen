@@ -1,4 +1,4 @@
-// TODO: delet?
+// TODO: delete?
 
 import * as express from 'express';
 import { ResourceController } from '../controllers/resource.controller';

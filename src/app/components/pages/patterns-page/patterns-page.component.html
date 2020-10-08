@@ -1,10 +1,4 @@
+<app-global-header></app-global-header>
+<app-project-header></app-project-header>
 <h1>Patterns</h1>
-<div *ngIf="projectWrapper !== null">
-  <button (click)="onClickAddPattern()">Add pattern</button>
-  <ul>
-    <li *ngFor="let patternWrapper of patternWrappers">
-      <div>{{ patternWrapper.pattern.num }}</div>
-      <app-pattern [patternWrapper]="patternWrapper"></app-pattern>
-    </li>
-  </ul>
-</div>
+<app-sequence-patterns-viewer></app-sequence-patterns-viewer>

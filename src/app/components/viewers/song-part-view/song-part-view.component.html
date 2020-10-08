@@ -1,0 +1,12 @@
+<div>
+  <h3>{{ songPart.num }}. {{ songPart.name}}</h3>
+  <div>{{ isSelected() ? 'selected' : '(not selected)'}}</div>
+  <div>
+    <label [for]="makeIdFor('num')">Num</label>
+    <input [id]="makeIdFor('num')" type="number" [min]="minNum" [max]="maxNum" [ngModel]="songPart.num"
+      (change)="onChangeNum($event.target.value)" />
+  </div>
+  <button (click)="onClickPlay()">Play</button>
+  <button (click)="onClickSelect()">Edit</button>
+  <button (click)="onClickRemove()">Remove</button>
+</div>

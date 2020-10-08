@@ -1,3 +1,4 @@
+import { ProjectsDataService } from './services/data/projects-data.service';
 import { RecorderService } from './services/mecanism/recorder.service';
 import { HttpClient } from '@angular/common/http';
 import { Project } from './../api/entities/Project';
@@ -5,8 +6,8 @@ import { SelectionService } from './services/control/selection.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ProjectManagerService } from './services/managers/project-manager.service';
-import { ServerService } from './services/server/server.service';
-import { UiService } from './services/ui/ui.service';
+import { ServerService } from './services/data/server.service';
+import { UIService } from './services/ui/ui.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -19,10 +20,10 @@ export class AppComponent implements OnInit, OnDestroy {
   loadingSubscription: Subscription;
 
   constructor(
-    private serverService: ServerService,
+    private projectsDataService: ProjectsDataService,
     private projectManagerService: ProjectManagerService,
     private selectionService: SelectionService,
-    private uiService: UiService,
+    private uiService: UIService,
     private recorderService: RecorderService
   ) {}
 
@@ -42,14 +43,16 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   test(): void {
-    this.serverService.getProjectFolders().then((items: string[]) => {
-      this.projectManagerService
-        .loadProject(items[0])
-        .then((project: Project) => {
-          if (project.sequences.length > 0) {
-            this.selectionService.setSelectedSequence(project.sequences[0]);
-          }
-        });
+    this.projectsDataService.getProjectFolders().then((items: string[]) => {
+      if (items.length > 0) {
+        this.projectManagerService
+          .loadProject(items[0])
+          .then((project: Project) => {
+            if (project.sequences.length > 0) {
+              this.selectionService.selectSequence(project.sequences[0]);
+            }
+          });
+      }
     });
 
     // this.recorderService.init(() => {

@@ -1,0 +1,19 @@
+<h1>Configuration</h1>
+
+<div *ngIf="loading">
+  <app-loading></app-loading>
+</div>
+
+<div *ngIf="configuration">
+  <form (ngSubmit)="onSubmit(form)" #form="ngForm">
+    <div>
+      <label for="dataRoot">Data folder</label>
+      <input id="dataRoot" type="text" [(ngModel)]="configuration.dataRoot" name="dataRoot" required />
+      <p>Enter an absolute path to the folder in your computer where will be located projects and resources</p>
+    </div>
+
+    <button type="submit" [disabled]="form.invalid">Enregistrer</button>
+  </form>
+</div>
+
+<button (click)="onClickCancel()">Cancel</button>

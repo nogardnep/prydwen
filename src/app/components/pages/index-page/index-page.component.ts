@@ -1,5 +1,3 @@
-import { ProjectManagerService } from './../../../services/managers/project-manager.service';
-import { ServerService } from './../../../services/server/server.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -8,10 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./index-page.component.scss'],
 })
 export class IndexPageComponent implements OnInit {
-  constructor(
-    private serverService: ServerService,
-    private projectManagerService: ProjectManagerService
-  ) {}
+  constructor() {}
 
   ngOnInit(): void {}
 }

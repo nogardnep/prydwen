@@ -1,31 +1,15 @@
-import { ProjectManagerService } from './../../../services/managers/project-manager.service';
-import { Subscription } from 'rxjs';
-import { ProjectWrapper } from './../../../../api/wrappers/ProjectWrapper';
+import { Sequence } from './../../../../api/entities/Sequence';
+import { SelectionService } from './../../../services/control/selection.service';
 import { Component, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { Project } from './../../../../api/entities/Project';
+import { ProjectManagerService } from './../../../services/managers/project-manager.service';
 
 @Component({
   selector: 'app-sequences-page',
   templateUrl: './sequences-page.component.html',
   styleUrls: ['./sequences-page.component.scss'],
 })
-export class SequencesPageComponent implements OnInit {
-  projectWrapper: ProjectWrapper = null;
-
-  projectWrapperSubscription: Subscription;
-
-  constructor(private projectManagerService: ProjectManagerService) {}
-
-  ngOnInit(): void {
-    this.projectWrapperSubscription = this.projectManagerService.selectedProjectWrapperSubject.subscribe(
-      (projectWrapper: ProjectWrapper) => {
-        this.projectWrapper = projectWrapper;
-      }
-    );
-
-    this.projectManagerService.emitSelectedProjectWrapper();
-  }
-
-  onClickAddSequence(): void {
-    this.projectManagerService.addSequence();
-  }
+export class SequencesPageComponent {
+  constructor() {}
 }

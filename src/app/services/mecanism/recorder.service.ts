@@ -1,12 +1,11 @@
-import { ResourcesManagerService } from './../managers/resources-manager.service';
+import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 import { config } from 'src/config/config';
 import { Pattern } from './../../../api/entities/Pattern';
-import { UtilsService } from './../control/utils.service';
-import { Subject } from 'rxjs';
+import { ResourcesDataService } from './../data/resources-data.service';
 import { ProjectManagerService } from './../managers/project-manager.service';
-import { ServerService } from './../server/server.service';
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { ResourcesManagerService } from './../managers/resources-manager.service';
+import { UIService } from './../ui/ui.service';
 declare var MediaRecorder: any;
 
 @Injectable({
@@ -26,9 +25,9 @@ export class RecorderService {
   armedPatternSubject = new Subject<Pattern>();
 
   constructor(
-    private serverService: ServerService,
+    private resourcesDataService: ResourcesDataService,
     private projectManagerService: ProjectManagerService,
-    private utilsService: UtilsService,
+    private uiService: UIService,
     private resourcesManagerService: ResourcesManagerService
   ) {
     this.init();
@@ -62,18 +61,14 @@ export class RecorderService {
     this.mesureCountdown--;
   }
 
-  arm(useCountdown: boolean): boolean {
+  arm(): boolean {
     let ready = false;
 
     if (this.armedPattern === null) {
-      this.utilsService.inform('Please arm a pattern');
+      this.uiService.inform('Please arm a pattern for recording');
     } else {
-      if (useCountdown) {
-        this.mesureCountdown = 1;
-      }
-
+      this.mesureCountdown = this.projectManagerService.getSelectedProject().recording.countdown;
       this.setArmed(true);
-
       ready = true;
     }
 
@@ -148,23 +143,23 @@ export class RecorderService {
     let name = '';
 
     if (this.armedPattern.name) {
-      name += this.armedPattern.name;
+      name += this.armedPattern.name + '-';
     }
 
     name += this.armedPattern.id;
 
     const path =
-      this.projectManagerService.getSelectedProjectWrapper().path +
+      this.projectManagerService.getCurrentPath() +
       '/' +
       name +
       '.' +
       config.recording.audioExtension;
 
-    this.serverService
+    this.resourcesDataService
       .storeFile(
         new File([blob], name + '.' + config.recording.audioExtension),
         // blob,
-        this.projectManagerService.getSelectedProjectWrapper().path
+        this.projectManagerService.getCurrentPath()
       )
       .then(() => {
         const newResouce = this.resourcesManagerService.makeResource(path);

@@ -1,0 +1,11 @@
+<h2>Audios</h2>
+<button (click)="onClickSynchronize()">Synchronize</button>
+<div *ngIf="loading">
+  <app-loading></app-loading>
+</div>
+<div *ngIf="!loading">
+  <div *ngIf="audioResources.length === 0">No audio found in the folder of this project (try clicking on 'Synchronize' button)</div>
+  <div *ngFor="let resource of audioResources">
+    <app-audio-resource (deleteClicked)="onClickDelete($event)" [resource]="resource"></app-audio-resource>
+  </div>
+</div>

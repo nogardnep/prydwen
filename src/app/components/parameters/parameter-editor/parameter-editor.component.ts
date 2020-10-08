@@ -1,18 +1,18 @@
 import {
-  ParameterLabel,
-  ParametersModel,
-  ParameterValue,
-} from './../../../../api/parameters/Parameter';
-import { ParametersService } from './../../../services/parameters/parameters.service';
-import { ParameterWrapper } from './../../../../api/wrappers/ParameterWrapper.model';
-import { Entity } from './../../../../api/entities/Entity';
-import {
   Component,
   EventEmitter,
   Input,
   OnChanges,
-  Output,
+  Output
 } from '@angular/core';
+import { EntityWithParameters } from './../../../../api/entities/EntityWithParameters';
+import {
+  ParameterLabel,
+  ParametersModel,
+  ParameterValue
+} from './../../../../api/parameters/Parameter';
+import { ParameterWrapper } from './../../../../api/wrappers/ParameterWrapper.model';
+import { ParametersService } from './../../../services/parameters/parameters.service';
 
 type SelectOption = {
   value: ParameterValue;
@@ -27,7 +27,7 @@ type SelectOption = {
   styleUrls: ['./parameter-editor.component.scss'],
 })
 export class ParameterEditorComponent implements OnChanges {
-  @Input() entity: Entity;
+  @Input() entity: EntityWithParameters;
   @Input() key: string;
   @Input() parametersModel: ParametersModel;
   @Output() changed = new EventEmitter<ParameterWrapper>();

@@ -1,4 +1,5 @@
 const glob = require('glob');
+const fs = require('fs-extra');
 
 export class ExplorerManager {
   static getFirstDirectoriesIn(path: string): Promise<string[]> {
@@ -8,6 +9,22 @@ export class ExplorerManager {
           reject(error);
         } else {
           resolve(items);
+        }
+      });
+    });
+  }
+
+  static checkIfFolderExists(path: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      fs.access(path, (error: any) => {
+        if (error) {
+          if (error.code === 'ENOENT') {
+            resolve(false);
+          } else {
+            reject(error);
+          }
+        } else {
+          resolve(true);
         }
       });
     });

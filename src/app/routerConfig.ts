@@ -1,37 +1,40 @@
+import { SongPageComponent } from './components/pages/song-page/song-page.component';
+import { ConfigurationPageComponent } from './components/pages/configuration-page/configuration-page.component';
 import { SequencesPageComponent } from './components/pages/sequences-page/sequences-page.component';
 import { PatternsPageComponent } from './components/pages/patterns-page/patterns-page.component';
 import { ResourcesPageComponent } from './components/pages/resources-page/resources-page.component';
 import { ProjectLoaderPageComponent } from './components/pages/project-loader-page/project-loader-page.component';
 import { IndexPageComponent } from './components/pages/index-page/index-page.component';
 import { Routes } from '@angular/router';
-
-export const pages = {
-  index: '',
-  patterns: 'patterns',
-  sequences: 'sequences',
-  projectLoader: 'project-loader',
-  resources: 'resources',
-};
+import { pages } from '../config/pages';
 
 export const appRoutes: Routes = [
   {
-    path: pages.index,
+    path: pages.index.path,
     component: IndexPageComponent,
   },
   {
-    path: pages.patterns,
-    component: PatternsPageComponent,
+    path: pages.song.path,
+    component: SongPageComponent,
   },
   {
-    path: pages.sequences,
+    path: pages.sequences.path,
     component: SequencesPageComponent,
   },
   {
-    path: pages.projectLoader,
+    path: pages.patterns.path,
+    component: PatternsPageComponent,
+  },
+  {
+    path: pages.projectLoader.path,
     component: ProjectLoaderPageComponent,
   },
   {
-    path: pages.resources,
+    path: pages.resources.path,
     component: ResourcesPageComponent,
+  },
+  {
+    path: pages.configuration.path,
+    component: ConfigurationPageComponent,
   },
 ];

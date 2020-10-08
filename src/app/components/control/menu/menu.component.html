@@ -1,6 +1,8 @@
-<h2>Menu</h2>
 <div>
   <span *ngFor="let item of items">
-    <button (click)="onClickItem(item)">{{ item.title }}</button>
+    <button (click)="onClickItem(item)">
+     <span>{{ item.title }}</span>
+    <span *ngIf="isCurrentPage(item)">*</span>
+    </button>
   </span>
 </div>

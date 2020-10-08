@@ -1,0 +1,8 @@
+<div *ngIf="project != null">
+  <button (click)="onClickAddSequence()">Add sequence</button>
+  <ul>
+    <li *ngFor="let sequence of getSequences()">
+      <app-sequence-view [sequence]="sequence"></app-sequence-view>
+    </li>
+  </ul>
+</div>

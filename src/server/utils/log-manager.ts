@@ -4,13 +4,13 @@ export enum LogType {
 }
 
 export class LogManager {
-  static log(type: LogType, message: string) {
+  static log(type: LogType, something: any): void {
     switch (type) {
       case LogType.Error:
-        console.log(message);
+        console.log(something);
         break;
       case LogType.Info:
-        console.error(message);
+        console.error(something);
         break;
     }
   }

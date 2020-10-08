@@ -1,4 +1,4 @@
-<h2>Project loader</h2>
+<h1>Project loader</h1>
 <div *ngIf="loading">
   <app-loading></app-loading>
 </div>
@@ -7,3 +7,4 @@
     <button (click)="onClickProject(path)">{{ path }}</button>
   </div>
 </div>
+<button (click)="onClickCancel()">Cancel</button>

@@ -1,12 +1,10 @@
+import { UserConfiguration } from './../../api/utils/userConfig';
 import { config } from './../../config/config';
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 
-export type UserConfiguration = {
-  dataRoot: string;
-};
 
 export class ConfigMangager {
-   static userConfiguration: UserConfiguration;
+  static userConfiguration: UserConfiguration;
 
   static getUserConfiguration(): UserConfiguration {
     if (this.userConfiguration === undefined) {

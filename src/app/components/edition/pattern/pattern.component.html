@@ -17,7 +17,7 @@
 <div *ngIf=" patternWrapper.pattern.audio.resource !==null">Audio: {{ patternWrapper.pattern.audio.resource.path }}
 </div>
 
-<select [(ngModel)]="patternWrapper.pattern.audio.resource" (ngModelChange)="onChangeResource($event)">
+<select [(ngModel)]="patternWrapper.pattern.audio.resource">
   <option [ngValue]="null" [selected]="patternWrapper.pattern.audio.resource === null">Empty</option>
   <option *ngFor="let resource of availableResources" [ngValue]="resource"
     [selected]="patternWrapper.pattern.audio.resource !== null && patternWrapper.pattern.audio.resource.path === resource.path">

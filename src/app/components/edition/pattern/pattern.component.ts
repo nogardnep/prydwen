@@ -12,6 +12,8 @@ import { ParametersModel } from './../../../../api/parameters/Parameter';
 import { SelectionService } from './../../../services/control/selection.service';
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 
+// TODO: delete?
+
 @Component({
   selector: 'app-pattern',
   templateUrl: './pattern.component.html',

@@ -1,3 +1,4 @@
+import { config } from './../../../../config/config';
 import { Sheet } from './../../../../api/entities/Sheet';
 import { Component, OnInit, Input } from '@angular/core';
 
@@ -9,6 +10,9 @@ import { Component, OnInit, Input } from '@angular/core';
 export class TimeSignatureComponent {
   @Input() model: Sheet;
   @Input() id: string;
+  config = config.sequencer.timeSignature;
 
-  constructor() {}
+  getIdFor(label: string): string {
+    return 'timesignature-' + this.id + '-' + label;
+  }
 }

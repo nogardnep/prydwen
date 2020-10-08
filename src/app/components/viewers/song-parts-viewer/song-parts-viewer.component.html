@@ -1,0 +1,8 @@
+<div *ngIf="song != null">
+  <button (click)="onClickAddSongPart()">Add song part</button>
+  <ul>
+    <li *ngFor="let songPart of getSongParts()">
+      <app-song-part-view [songPart]="songPart" [song]="song"></app-song-part-view>
+    </li>
+  </ul>
+</div>

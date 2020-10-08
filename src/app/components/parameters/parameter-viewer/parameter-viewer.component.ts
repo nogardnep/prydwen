@@ -1,7 +1,7 @@
-import { Entity } from './../../../../api/entities/Entity';
-import { ParametersModel } from './../../../../api/parameters/Parameter';
-import { ParametersService } from 'src/app/services/parameters/parameters.service';
 import { Component, Input, OnInit } from '@angular/core';
+import { ParametersService } from 'src/app/services/parameters/parameters.service';
+import { EntityWithParameters } from './../../../../api/entities/EntityWithParameters';
+import { ParametersModel } from './../../../../api/parameters/Parameter';
 
 @Component({
   selector: 'app-parameter-viewer',
@@ -9,7 +9,7 @@ import { Component, Input, OnInit } from '@angular/core';
   styleUrls: ['./parameter-viewer.component.scss'],
 })
 export class ParameterViewerComponent implements OnInit {
-  @Input() entity: Entity;
+  @Input() entity: EntityWithParameters;
   @Input() key: string;
   @Input() parametersModel: ParametersModel;
 

@@ -1,4 +1,4 @@
-import { UtilsService } from './../../../services/control/utils.service';
+import { UIService } from './../../../services/ui/ui.service';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Resource } from './../../../../api/entities/Resource';
 
@@ -9,19 +9,15 @@ import { Resource } from './../../../../api/entities/Resource';
 })
 export class AudioResourceComponent implements OnInit {
   @Input() resource: Resource;
-  @Output() deleted = new EventEmitter<Resource>();
+  @Output() deleteClicked = new EventEmitter<Resource>();
 
   constructor(
-    private utilsService: UtilsService
+    private uiService: UIService
   ) {}
 
   ngOnInit(): void {}
 
   onClickDelete(): void {
-    this.utilsService.askConfirmation((confirmed: boolean) => {
-      if (confirmed) {
-        this.deleted.emit(this.resource);
-      }
-    });
+    this.deleteClicked.emit(this.resource);
   }
 }

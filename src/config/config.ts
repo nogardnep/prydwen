@@ -9,6 +9,10 @@ export const config = {
   resourcesPath: 'resources',
   projectDataFileName: 'project.json',
   presetDataFileName: 'preset.json',
+  entities: {
+    firstNum: 1,
+    maxNum: 1000,
+  },
   routes: {
     file: 'file',
     project: 'project',
@@ -18,6 +22,20 @@ export const config = {
   },
   sequencer: {
     ticksByBeat: 12,
+    timeSignature: {
+      step: {
+        min: 3,
+        max: 4,
+      },
+      beat: {
+        min: 1,
+        max: 16,
+      },
+      mesure: {
+        min: 1,
+        max: 16,
+      },
+    },
   },
   uploadId: 'upload',
   uploadFolder: 'uploads', // TODO: keep?

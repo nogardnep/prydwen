@@ -4,6 +4,8 @@ const router = express.Router();
 
 router.get('/', ProjectController.getAll);
 router.get('/*', ProjectController.getOne);
-router.post('/*', ProjectController.updateOne);
+router.post('/update/*', ProjectController.update);
+router.post('/create', ProjectController.create);
+router.delete('/*', ProjectController.delete);
 
 module.exports = router;

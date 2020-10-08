@@ -1,10 +1,11 @@
-import { Metronome } from './../../../../api/machine/Metronome';
-import { RecorderService } from './../../../services/mecanism/recorder.service';
-import { Position } from './../../../../api/utils/Position';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Project } from './../../../../api/entities/Project';
 import { Sequence } from './../../../../api/entities/Sequence';
+import { Position } from './../../../../api/utils/Position';
 import { SelectionService } from './../../../services/control/selection.service';
+import { ProjectManagerService } from './../../../services/managers/project-manager.service';
+import { RecorderService } from './../../../services/mecanism/recorder.service';
 import { SequencerOutputService } from './../../../services/mecanism/sequencer-output.service';
 import { SequencerService } from './../../../services/mecanism/sequencer.service';
 
@@ -16,13 +17,9 @@ import { SequencerService } from './../../../services/mecanism/sequencer.service
 export class SequencerPlayerComponent implements OnInit, OnDestroy {
   selectedSequence: Sequence = null;
   sequencerPosition: Position = null;
+  project: Project = null;
   recording = null;
   recorderArmed = null;
-  metronome: Metronome = {
-    muted: false,
-    volume: 0.5,
-  };
-  useCountdown = true;
   playing = true;
 
   sequencerPositionSubscription: Subscription;
@@ -30,17 +27,15 @@ export class SequencerPlayerComponent implements OnInit, OnDestroy {
   recordingSubscription: Subscription;
   recorderArmedSubscription: Subscription;
   playingSubscription: Subscription;
+  selectedProjectSubcription: Subscription;
 
   constructor(
     private sequencerService: SequencerService,
     private sequencerOutputService: SequencerOutputService,
     private selectionService: SelectionService,
-    private recorderService: RecorderService
-  ) {
-    // TODO: move
-    this.sequencerService.switchMetronome(this.metronome.muted);
-    this.sequencerService.setMetronomeVolume(this.metronome.volume);
-  }
+    private recorderService: RecorderService,
+    private projectManagerService: ProjectManagerService
+  ) {}
 
   ngOnInit(): void {
     this.sequencerPositionSubscription = this.sequencerOutputService.positionSubject.subscribe(
@@ -77,6 +72,21 @@ export class SequencerPlayerComponent implements OnInit, OnDestroy {
       }
     );
     this.sequencerOutputService.emitPlaying();
+
+    this.selectedProjectSubcription = this.projectManagerService.currentProjectSubject.subscribe(
+      (project: Project) => {
+        if (project !== null) {
+          this.project = project;
+
+          // TODO: move
+          this.sequencerService.switchMetronome(this.project.metronome.muted);
+          this.sequencerService.setMetronomeVolume(
+            this.project.metronome.volume
+          );
+        }
+      }
+    );
+    this.projectManagerService.emitCurrentProject();
   }
 
   ngOnDestroy(): void {
@@ -84,6 +94,7 @@ export class SequencerPlayerComponent implements OnInit, OnDestroy {
     this.selectedSequenceSubscription.unsubscribe();
     this.recordingSubscription.unsubscribe();
     this.recorderArmedSubscription.unsubscribe();
+    this.selectedProjectSubcription.unsubscribe();
   }
 
   onClickPlay(): void {
@@ -92,7 +103,7 @@ export class SequencerPlayerComponent implements OnInit, OnDestroy {
 
   onClickRecord(): void {
     if (!this.recorderArmed && !this.recording) {
-      this.recorderService.arm(this.useCountdown);
+      this.recorderService.arm();
     }
   }
 
@@ -107,8 +118,8 @@ export class SequencerPlayerComponent implements OnInit, OnDestroy {
 
   onClickSwitchMetronome(): void {
     // TODO: move
-    this.metronome.muted = !this.metronome.muted;
-    this.sequencerService.switchMetronome(this.metronome.muted);
+    this.project.metronome.muted = !this.project.metronome.muted;
+    this.sequencerService.switchMetronome(this.project.metronome.muted);
   }
 
   onChangeMetronomeVolume(volume: number): void {

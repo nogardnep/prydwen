@@ -1,5 +1,6 @@
+import { UserConfiguration } from './../../api/utils/userConfig';
 import { Request, Response } from 'express';
-import { UserConfiguration, ConfigMangager } from '../utils/config-manager';
+import { ConfigMangager } from '../utils/config-manager';
 import * as fs from 'fs';
 
 export class ConfigController {

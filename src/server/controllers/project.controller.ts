@@ -1,11 +1,10 @@
-import { Project } from './../../api/entities/Project';
-import { config } from './../../config/config';
 import { NextFunction, Request, Response } from 'express';
 import { ExplorerManager } from '../utils/explorer-manager';
 import { LogManager, LogType } from '../utils/log-manager';
 import { PathManager } from '../utils/path-manager';
+import { Project } from './../../api/entities/Project';
+import { config } from './../../config/config';
 const fs = require('fs-extra');
-const glob = require('glob');
 
 export class ProjectController {
   static getAll(req: Request, res: Response, next: NextFunction): void {
@@ -22,7 +21,6 @@ export class ProjectController {
   static getOne(req: Request, res: Response, next: NextFunction): void {
     const path = ProjectController.makePathToData(req.params[0]);
 
-    // With Promises:
     fs.readJson(path)
       .then((object: Project) => {
         res.status(200).json(object);
@@ -32,31 +30,51 @@ export class ProjectController {
       });
   }
 
-  static updateOne(req: Request, res: Response, next: NextFunction): void {
+  static delete(req: Request, res: Response, next: NextFunction): void {
+    const path = req.params[0];
+
+    fs.remove(path)
+      .then(() => {
+        res.status(200).json(true);
+      })
+      .catch((error) => {
+        res.status(400).json(error);
+      });
+  }
+
+  static update(req: Request, res: Response, next: NextFunction): void {
     const path = ProjectController.makePathToData(req.params[0]);
     const project = req.body;
 
-    ProjectController.storeProject(path, project, (error: string) => {
-      if (error) {
+    fs.writeJson(path, project)
+      .then(() => {
         res.status(200).json(project);
-      } else {
+      })
+      .catch((error) => {
         res.status(400).json(error);
         LogManager.log(LogType.Error, error);
-      }
-    });
+      });
   }
 
-  private static storeProject(
-    path: string,
-    project: Project,
-    callback: (error: string) => void
-  ): void {
-    console.log(path);
-    fs.writeJson(path, project, (err: string) => {
-      if (err) {
-        return console.error(err);
-      }
-    });
+  static create(req: Request, res: Response, next: NextFunction): void {
+    const absolutePath = PathManager.getProjectsPath() + '/' + req.body.path;
+
+    ExplorerManager.checkIfFolderExists(absolutePath)
+      .then((exists: boolean) => {
+        if (exists) {
+          res.status(400).json({
+            exists: true,
+            message: 'Folder "' + absolutePath + '" aleary exists',
+          });
+        } else {
+          fs.mkdir(absolutePath);
+          res.status(200).json(absolutePath);
+        }
+      })
+      .catch((error: object) => {
+        LogManager.log(LogType.Error, error);
+        res.status(400).json(error);
+      });
   }
 
   private static makePathToData(pathToFolder: string): string {

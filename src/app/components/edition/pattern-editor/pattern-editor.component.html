@@ -1,0 +1,8 @@
+<div *ngIf="pattern !== null">
+  <h2>Pattern {{ pattern.num }}</h2>
+  <div>
+    <label [for]="makeIdFor('name')">Name</label>
+    <input [id]="makeIdFor('name')" type="text" [(ngModel)]="pattern.name" />
+  </div>
+  <app-parameters-editor [parametersModel]="getParametersModel()" [entity]="pattern"></app-parameters-editor>
+</div>

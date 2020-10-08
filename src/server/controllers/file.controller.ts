@@ -26,10 +26,24 @@ export class FileController {
     res.sendFile(path);
   }
 
-  static storeFile(req: Request, res: Response, next: NextFunction): void {
+  static store(req: Request, res: Response, next: NextFunction): void {
     const path = req.params[0];
 
     res.status(200).json(path);
+  }
+
+  static delete(req: Request, res: Response, next: NextFunction): void {
+    const path = req.params[0];
+
+    fs.remove(path)
+      .then(() => {
+        console.log(path)
+        res.status(200).json(true);
+      })
+      .catch((error) => {
+        console.log(error)
+        res.status(400).json(error);
+      });
   }
 
   private static makeExtensions(typeKeys: string): string[] {

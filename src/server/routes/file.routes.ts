@@ -24,7 +24,8 @@ router.get('/src/*', FileController.getSrc);
 router.post(
   '/path/*',
   audioUpload.single(config.uploadId),
-  FileController.storeFile
+  FileController.store
 );
+router.delete('/*', FileController.delete);
 
 module.exports = router;

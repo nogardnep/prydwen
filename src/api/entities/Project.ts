@@ -1,9 +1,14 @@
+import { Song } from './Song';
 import { EntityWithId } from './EntityWithId';
-import { Pattern } from './Pattern';
+import { Metronome } from './Metronome';
 import { Sequence } from './Sequence';
 
 export interface Project extends EntityWithId {
   name: string;
-  patterns: Pattern[];
   sequences: Sequence[];
+  songs: Song[];
+  recording: {
+    countdown: number;
+  };
+  metronome: Metronome;
 }

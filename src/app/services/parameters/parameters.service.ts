@@ -1,11 +1,10 @@
-import { Entity } from './../../../api/entities/Entity';
-import {
-  ParameterModel,
-  ParameterLabel,
-  ParametersModel,
-  ParameterValue,
-} from '../../../api/parameters/Parameter';
 import { Injectable } from '@angular/core';
+import {
+  ParameterLabel, ParameterModel,
+  ParametersModel,
+  ParameterValue
+} from '../../../api/parameters/Parameter';
+import { EntityWithParameters } from './../../../api/entities/EntityWithParameters';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +15,7 @@ export class ParametersService {
   // TODO: do not use string as keys
 
   checkParameter(
-    entity: Entity,
+    entity: EntityWithParameters,
     parametersModel: ParametersModel,
     key: string
   ): void {
@@ -30,7 +29,7 @@ export class ParametersService {
   }
 
   getParameter(
-    entity: Entity,
+    entity: EntityWithParameters,
     parametersModel: ParametersModel,
     key: string
   ): ParameterValue {

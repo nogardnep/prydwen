@@ -1,0 +1,8 @@
+<div *ngIf="sequence !== null">
+<h2>Sequence</h2>
+  <div>
+    <label [for]="makeIdFor('name')">Name</label>
+    <input [id]="makeIdFor('name')" type="text" [(ngModel)]="sequence.name" />
+  </div>
+  <app-parameters-editor [parametersModel]="getParametersModel()" [entity]="sequence"></app-parameters-editor>
+</div>

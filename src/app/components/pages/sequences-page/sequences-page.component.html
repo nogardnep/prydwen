@@ -1,10 +1,4 @@
+<app-global-header></app-global-header>
+<app-project-header></app-project-header>
 <h1>Sequences</h1>
-<div *ngIf="projectWrapper !== null">
-  <button (click)="onClickAddSequence()">Add sequence</button>
-  <ul>
-    <li *ngFor="let sequence of projectWrapper.project.sequences">
-      <div>{{ sequence.num }}</div>
-      <app-sequence [sequence]="sequence"></app-sequence>
-    </li>
-  </ul>
-</div>
+<app-sequences-viewer></app-sequences-viewer>

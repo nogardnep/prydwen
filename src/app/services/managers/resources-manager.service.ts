@@ -1,4 +1,4 @@
-import { ServerService } from './../server/server.service';
+import { ServerService } from './../data/server.service';
 import { Injectable } from '@angular/core';
 import { Resource } from './../../../api/entities/Resource';
 
