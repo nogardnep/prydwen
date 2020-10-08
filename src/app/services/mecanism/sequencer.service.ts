@@ -1,3 +1,4 @@
+import { Pattern } from './../../../api/entities/Pattern';
 import { Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { OutputsService } from './../io/outputs.service';
@@ -6,10 +7,6 @@ import { OutputsService } from './../io/outputs.service';
   providedIn: 'root',
 })
 export class SequencerService {
-  metronomeMuted = false;
-
-  private metronomeMutedSubject = new Subject<boolean>();
-
   constructor(private outputsService: OutputsService) {}
 
   switchMetronome(muted: boolean): void {
@@ -30,5 +27,15 @@ export class SequencerService {
 
   stop(): void {
     this.outputsService.getSequencer().stop();
+  }
+
+  updatePatternAudio(pattern: Pattern): void {
+    // TODO
+    console.log('TODO');
+  }
+
+  playPattern(pattern: Pattern): void {
+    // TODO
+    console.log('TODO');
   }
 }

@@ -40,6 +40,11 @@ export class Sequencer implements ISequencer {
       this.move();
     });
 
+    const clock = new Tone.Clock(time => {
+      console.log(time);
+    }, 1);
+    clock.start();
+
     this.sendPosition();
   }
 

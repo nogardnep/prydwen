@@ -14,6 +14,9 @@ export interface Pattern extends Sheet, EntityWithNumber, EntityWithId {
   video: {
     resource: Resource;
   };
+  armedForRecording: boolean;
+  armedForPlaying: boolean;
+  looping: boolean;
 }
 
 export const patternParametersModel: ParametersModel = {};

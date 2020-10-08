@@ -120,7 +120,7 @@ export class ProjectManagerService {
     this.availableResourcesSubject.next(this.availableResources);
   }
 
-  getSelectedProject(): Project {
+  getCurrentProject(): Project {
     return this.currentProject;
   }
 
@@ -134,6 +134,9 @@ export class ProjectManagerService {
       name: '',
       num: this.makeNum(sequence.patterns),
       bank: 1,
+      armedForPlaying: false,
+      armedForRecording: false,
+      looping: false,
       timeSignature: {
         step: 4,
         beat: 4,

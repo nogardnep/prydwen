@@ -1,3 +1,7 @@
+import { PatternsManagerService } from './../managers/patterns-manager.service';
+import { EntityUtils } from './../../utils/EntityUtils';
+import { Sequence } from './../../../api/entities/Sequence';
+import { SelectionService } from './../control/selection.service';
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { config } from 'src/config/config';
@@ -28,7 +32,9 @@ export class RecorderService {
     private resourcesDataService: ResourcesDataService,
     private projectManagerService: ProjectManagerService,
     private uiService: UIService,
-    private resourcesManagerService: ResourcesManagerService
+    private resourcesManagerService: ResourcesManagerService,
+    private selectionService: SelectionService,
+    private patternsManagerService:PatternsManagerService
   ) {
     this.init();
   }
@@ -67,7 +73,7 @@ export class RecorderService {
     if (this.armedPattern === null) {
       this.uiService.inform('Please arm a pattern for recording');
     } else {
-      this.mesureCountdown = this.projectManagerService.getSelectedProject().recording.countdown;
+      this.mesureCountdown = this.projectManagerService.getCurrentProject().recording.countdown;
       this.setArmed(true);
       ready = true;
     }
@@ -88,8 +94,32 @@ export class RecorderService {
   }
 
   setArmedPattern(pattern: Pattern): void {
+    const previousArmed = this.armedPattern;
+
+    if (previousArmed !== null) {
+      previousArmed.armedForRecording = false;
+    }
+
+    if (pattern != null) {
+      pattern.armedForRecording = true;
+    }
+
     this.armedPattern = pattern;
     this.emitArmedPattern();
+  }
+
+  unarmeAll(execpted: Pattern): void {
+    // TODO: unarm when changing sequence
+
+    this.projectManagerService
+      .getCurrentProject()
+      .sequences.forEach((sequence: Sequence) => {
+        sequence.patterns.forEach((pattern: Pattern) => {
+          if (!EntityUtils.areSame(pattern, execpted)) {
+            pattern.armedForRecording = false;
+          }
+        });
+      });
   }
 
   private init(callback?: () => any): void {
@@ -165,6 +195,7 @@ export class RecorderService {
         const newResouce = this.resourcesManagerService.makeResource(path);
         this.armedPattern.audio.resource = newResouce;
         this.projectManagerService.updateResources();
+        this.patternsManagerService.updateAudio(this.armedPattern);
       })
       .catch((error) => {
         console.error(error);

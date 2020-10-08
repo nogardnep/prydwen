@@ -50,6 +50,12 @@ export class AppComponent implements OnInit, OnDestroy {
           .then((project: Project) => {
             if (project.sequences.length > 0) {
               this.selectionService.selectSequence(project.sequences[0]);
+
+              if (project.sequences[0].patterns.length > 0) {
+                this.selectionService.selectPattern(
+                  project.sequences[0].patterns[0]
+                );
+              }
             }
           });
       }

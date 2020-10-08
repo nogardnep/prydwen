@@ -4,5 +4,24 @@
     <label [for]="makeIdFor('name')">Name</label>
     <input [id]="makeIdFor('name')" type="text" [(ngModel)]="pattern.name" />
   </div>
+  <div>
+    <div>
+      <label [for]="makeIdFor('arm-for-playing')">Arm for playing</label>
+      <input [id]="makeIdFor('arm-for-playing')" type="checkbox" [(ngModel)]="pattern.armedForPlaying">
+    </div>
+    <app-pattern-arm-for-recording [pattern]="pattern"></app-pattern-arm-for-recording>
+  </div>
+  <div *ngIf=" pattern.audio.resource !==null">
+    <span>Audio: {{ pattern.audio.resource.path }}</span>
+    <app-audio [src]="pattern.audio.resource.src"></app-audio>
+  </div>
+  <select [(ngModel)]="pattern.audio.resource" (change)="onChangeAudio()">
+    <option [ngValue]="null" [selected]="pattern.audio.resource === null">Empty</option>
+    <option *ngFor="let resource of availableResources" [ngValue]="resource"
+      [selected]="pattern.audio.resource !== null && pattern.audio.resource.path === resource.path">
+      {{resource.path}}
+    </option>
+  </select>
+
   <app-parameters-editor [parametersModel]="getParametersModel()" [entity]="pattern"></app-parameters-editor>
 </div>

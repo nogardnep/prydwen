@@ -41,6 +41,7 @@ import { SongPageComponent } from './components/pages/song-page/song-page.compon
 import { SongPartsViewerComponent } from './components/viewers/song-parts-viewer/song-parts-viewer.component';
 import { SongPartViewComponent } from './components/viewers/song-part-view/song-part-view.component';
 import { SongPartEditorComponent } from './components/edition/song-part-editor/song-part-editor.component';
+import { PatternArmForRecordingComponent } from './components/utils/pattern-arm-for-recording/pattern-arm-for-recording.component';
 
 @NgModule({
   declarations: [
@@ -79,6 +80,7 @@ import { SongPartEditorComponent } from './components/edition/song-part-editor/s
     SongPartsViewerComponent,
     SongPartViewComponent,
     SongPartEditorComponent,
+    PatternArmForRecordingComponent,
   ],
   imports: [
     RouterModule.forRoot(appRoutes),
