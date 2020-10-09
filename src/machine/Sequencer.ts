@@ -7,6 +7,9 @@ import { SequencerOutputs } from './../api/machine/SequencerOutputs';
 import { TimeSignature } from './../api/utils/TimeSignature';
 import { Clock } from './Clock';
 
+import * as Tone from 'tone'
+
+
 export class Sequencer implements ISequencer {
   private clock: Clock;
   private positionWrapper: PositionWrapper;
@@ -40,10 +43,18 @@ export class Sequencer implements ISequencer {
       this.move();
     });
 
+    // const clock = new Tone.Clock(time => {
+    //   console.log(time);
+    // }, 1);
+    // clock.start();
+
+    Tone.start()
+
     const clock = new Tone.Clock(time => {
-      console.log(time);
-    }, 1);
-    clock.start();
+      this.move();
+    }, 2);
+
+    // clock.start();
 
     this.sendPosition();
   }
