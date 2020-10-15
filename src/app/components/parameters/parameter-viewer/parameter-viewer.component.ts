@@ -1,7 +1,7 @@
+import { ParameterUtils } from './../../../utils/ParameterUtils';
 import { Component, Input, OnInit } from '@angular/core';
-import { ParametersService } from 'src/app/services/parameters/parameters.service';
-import { EntityWithParameters } from './../../../../api/entities/EntityWithParameters';
-import { ParametersModel } from './../../../../api/parameters/Parameter';
+import { EntityWithParameters } from './../../../../models/entities/EntityWithParameters';
+import { ParametersModel } from './../../../../models/parameters/Parameter';
 
 @Component({
   selector: 'app-parameter-viewer',
@@ -13,10 +13,10 @@ export class ParameterViewerComponent implements OnInit {
   @Input() key: string;
   @Input() parametersModel: ParametersModel;
 
-  constructor(private parametersService: ParametersService) {}
+  constructor() {}
 
   ngOnInit(): void {
-    this.parametersService.checkParameter(
+    ParameterUtils.checkParameter(
       this.entity,
       this.parametersModel,
       this.key
@@ -25,7 +25,7 @@ export class ParameterViewerComponent implements OnInit {
 
   print(): string {
     const value = this.entity.parameters[this.key];
-    const label = this.parametersService.getLabelFor(
+    const label = ParameterUtils.getLabelFor(
       value,
       this.parametersModel[this.key]
     );

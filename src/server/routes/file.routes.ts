@@ -1,3 +1,4 @@
+import { ConfigMangager } from './../utils/config-manager';
 import { config } from './../../config/config';
 import * as express from 'express';
 import { FileController } from '../controllers/file.controller';
@@ -7,7 +8,8 @@ const multer = require('multer');
 const audioUpload = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
-      const path = req.params[0];
+
+      const path = ConfigMangager.getUserConfiguration().projectsRoot + '/' + req.params[0];
       cb(null, path);
     },
     filename: (req, file, cb) => {

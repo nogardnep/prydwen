@@ -1,15 +1,13 @@
-import { PatternsManagerService } from './../managers/patterns-manager.service';
-import { EntityUtils } from './../../utils/EntityUtils';
-import { Sequence } from './../../../api/entities/Sequence';
-import { SelectionService } from './../control/selection.service';
-import { Injectable } from '@angular/core';
+import { TracksManagerService } from './../managers/tracks-manager.service';
+import { Injectable, ɵConsole } from '@angular/core';
 import { Subject } from 'rxjs';
 import { config } from 'src/config/config';
-import { Pattern } from './../../../api/entities/Pattern';
+import { AudioTrack } from './../../../models/entities/AudioTrack';
+import { EntityUtils } from './../../utils/EntityUtils';
 import { ResourcesDataService } from './../data/resources-data.service';
 import { ProjectManagerService } from './../managers/project-manager.service';
-import { ResourcesManagerService } from './../managers/resources-manager.service';
 import { UIService } from './../ui/ui.service';
+import * as Tone from 'tone';
 declare var MediaRecorder: any;
 
 @Injectable({
@@ -21,31 +19,32 @@ export class RecorderService {
   private audioChunks: BlobPart[]; // TDOO
   private armed = false;
   private recording = false;
-  private mesureCountdown = 0;
-  private armedPattern: Pattern = null;
+  private measureCountdown = 0;
+  private armedTrack: AudioTrack = null;
+  private recorder = new Tone.Recorder();
 
   recordingSubject = new Subject<boolean>();
   armedSubject = new Subject<boolean>();
-  armedPatternSubject = new Subject<Pattern>();
+  armedTrackSubject = new Subject<AudioTrack>();
 
   constructor(
     private resourcesDataService: ResourcesDataService,
     private projectManagerService: ProjectManagerService,
     private uiService: UIService,
-    private resourcesManagerService: ResourcesManagerService,
-    private selectionService: SelectionService,
-    private patternsManagerService:PatternsManagerService
+    private tracksManagerService: TracksManagerService
   ) {
-    this.init();
+    this.init(() => {
+      // this.start();
+    });
   }
 
   private start(): void {
-    console.log('start');
     this.setRecording(true);
     this.setArmed(false);
     this.armed = false;
     this.audioChunks = [];
     this.mediaRecorder.start();
+    // this.recorder.start();
   }
 
   stop(): void {
@@ -53,32 +52,58 @@ export class RecorderService {
 
     if (this.recording) {
       this.setRecording(false);
+
+      console.log('a');
+
       this.mediaRecorder.stop();
+
+      // this.recorder.stop().then((blob: Blob) => {
+      //   // const url = URL.createObjectURL(recording);
+
+      //   // const anchor = document.createElement('a');
+      //   // anchor.download = 'recording.webm';
+      //   // anchor.href = url;
+      //   // anchor.click();
+
+      //   // const blob = new Blob(this.audioChunks, {
+      //   //   type: 'audio/' + config.recording.audioExtension,
+      //   // });
+
+      //   console.log(blob);
+      //   // const url = URL.createObjectURL(blob);
+      //   // const audio = new Audio(url);
+      //   // audio.play();
+      //   // this.sendToServer(blob);
+      // });
     }
   }
 
   check(): void {
-    if (this.armed && this.mesureCountdown <= 0) {
+    if (this.armed && this.measureCountdown <= 0) {
       this.start();
     }
   }
 
   decreaseCountdown(): void {
-    this.mesureCountdown--;
+    this.measureCountdown--;
   }
 
   arm(): boolean {
     let ready = false;
 
-    if (this.armedPattern === null) {
+    if (this.armedTrack === null) {
       this.uiService.inform('Please arm a pattern for recording');
     } else {
-      this.mesureCountdown = this.projectManagerService.getCurrentProject().recording.countdown;
+      this.measureCountdown = this.projectManagerService.getCurrentProject().recording.countdown;
       this.setArmed(true);
       ready = true;
     }
 
     return ready;
+  }
+
+  isRecording(): boolean {
+    return this.recording;
   }
 
   emitRecording(): void {
@@ -89,46 +114,48 @@ export class RecorderService {
     this.armedSubject.next(this.armed);
   }
 
-  emitArmedPattern(): void {
-    this.armedPatternSubject.next(this.armedPattern);
+  emitArmedTrack(): void {
+    this.armedTrackSubject.next(this.armedTrack);
   }
 
-  setArmedPattern(pattern: Pattern): void {
-    const previousArmed = this.armedPattern;
+  setArmedTrack(track: AudioTrack): void {
+    const previousArmed = this.armedTrack;
 
     if (previousArmed !== null) {
       previousArmed.armedForRecording = false;
     }
 
-    if (pattern != null) {
-      pattern.armedForRecording = true;
+    if (track != null) {
+      track.armedForRecording = true;
     }
 
-    this.armedPattern = pattern;
-    this.emitArmedPattern();
+    this.armedTrack = track;
+    this.emitArmedTrack();
   }
 
-  unarmeAll(execpted: Pattern): void {
+  unarmeAll(execpted?: AudioTrack): void {
     // TODO: unarm when changing sequence
 
     this.projectManagerService
       .getCurrentProject()
-      .sequences.forEach((sequence: Sequence) => {
-        sequence.patterns.forEach((pattern: Pattern) => {
-          if (!EntityUtils.areSame(pattern, execpted)) {
-            pattern.armedForRecording = false;
-          }
-        });
+      .audioTracks.forEach((track: AudioTrack) => {
+        if (execpted !== undefined && !EntityUtils.areSame(track, execpted)) {
+          track.armedForRecording = false;
+        }
       });
   }
 
   private init(callback?: () => any): void {
+    console.log('INIT RECORDER');
     navigator.mediaDevices
       .getUserMedia({
         audio: true,
       })
-      .then((stream) => {
+      .then((stream: MediaStream) => {
         this.stream = stream;
+        console.log(stream);
+        const audioContext = new AudioContext()
+
         this.mediaRecorder = new MediaRecorder(stream);
 
         this.mediaRecorder.addEventListener('dataavailable', (event) => {
@@ -170,35 +197,32 @@ export class RecorderService {
   }
 
   private sendToServer(blob: Blob): void {
-    let name = '';
-
-    if (this.armedPattern.name) {
-      name += this.armedPattern.name + '-';
-    }
-
-    name += this.armedPattern.id;
-
-    const path =
-      this.projectManagerService.getCurrentPath() +
-      '/' +
-      name +
-      '.' +
-      config.recording.audioExtension;
+    const filename =
+      this.makeRecordName() + '.' + config.recording.audioExtension;
+    const file = new File([blob], filename);
 
     this.resourcesDataService
-      .storeFile(
-        new File([blob], name + '.' + config.recording.audioExtension),
-        // blob,
-        this.projectManagerService.getCurrentPath()
-      )
+      .storeFile(file, this.projectManagerService.getCurrentPath())
       .then(() => {
-        const newResouce = this.resourcesManagerService.makeResource(path);
-        this.armedPattern.audio.resource = newResouce;
+        this.armedTrack.resource = {
+          path: filename,
+          local: true,
+        };
+
         this.projectManagerService.updateResources();
-        this.patternsManagerService.updateAudio(this.armedPattern);
-      })
-      .catch((error) => {
-        console.error(error);
+        this.tracksManagerService.update(this.armedTrack);
       });
+  }
+
+  private makeRecordName(): string {
+    let name = '';
+
+    if (this.armedTrack.name) {
+      name += this.armedTrack.name + '-';
+    }
+
+    name += this.armedTrack.id;
+
+    return name;
   }
 }

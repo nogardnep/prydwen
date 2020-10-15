@@ -1,8 +1,10 @@
-import { ParametersModel } from './../../../../api/parameters/Parameter';
-import { SelectionService } from './../../../services/control/selection.service';
-import { Subscription } from 'rxjs';
-import { Sequence, sequenceParametersModel } from './../../../../api/entities/Sequence';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+  Sequence,
+  sequenceParametersModel,
+} from './../../../../models/entities/Sequence';
+import { ParametersModel } from './../../../../models/parameters/Parameter';
+import { SequencesManagerService } from './../../../services/managers/sequences-manager.service';
 
 @Component({
   selector: 'app-sequence-editor',
@@ -10,24 +12,13 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
   styleUrls: ['./sequence-editor.component.scss'],
 })
 export class SequenceEditorComponent implements OnInit, OnDestroy {
-  sequence: Sequence = null;
+  @Input() sequence: Sequence = null;
 
-  private selectedSequenceSubscription: Subscription;
+  constructor(private sequencesManagerService: SequencesManagerService) {}
 
-  constructor(private selectionService: SelectionService) {}
+  ngOnInit(): void {}
 
-  ngOnInit(): void {
-    this.selectedSequenceSubscription = this.selectionService.selectedSequenceSubject.subscribe(
-      (sequence: Sequence) => {
-        this.sequence = sequence;
-      }
-    );
-    this.selectionService.emitSelectedSequence();
-  }
-
-  ngOnDestroy(): void {
-    this.selectedSequenceSubscription.unsubscribe();
-  }
+  ngOnDestroy(): void {}
 
   getParametersModel(): ParametersModel {
     return sequenceParametersModel;
@@ -35,5 +26,13 @@ export class SequenceEditorComponent implements OnInit, OnDestroy {
 
   makeIdFor(label: string): string {
     return 'sequence-' + this.sequence.id + '-' + label;
+  }
+
+  onChangeParameter(): void {
+    this.sequencesManagerService.update(this.sequence);
+  }
+
+  onChangeTimeSignature(): void {
+    this.sequencesManagerService.update(this.sequence);
   }
 }

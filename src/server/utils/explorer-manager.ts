@@ -1,14 +1,27 @@
+import { PathManager } from './path-manager';
 const glob = require('glob');
 const fs = require('fs-extra');
 
 export class ExplorerManager {
   static getFirstDirectoriesIn(path: string): Promise<string[]> {
     return new Promise((resolve, reject) => {
-      glob(path + '/*', (error: string, items: string[]) => {
+      glob(path + '/**/', (error: string, items: string[]) => {
         if (error) {
           reject(error);
         } else {
-          resolve(items);
+          const found = [];
+
+          items.forEach((item: string) => {
+            if (item !== PathManager.getProjectsPath() + '/') {
+              found.push(
+                item
+                  .replace(PathManager.getProjectsPath() + '/', '')
+                  .slice(0, -1)
+              );
+            }
+          });
+
+          resolve(found);
         }
       });
     });
@@ -29,8 +42,6 @@ export class ExplorerManager {
       });
     });
   }
-
-  // test with : http://localhost:8000/api/file/C:/Users/Nicolas/prydwen-data/projects/A
 
   static getFilesIn(path: string, extensions?: string[]): Promise<string[]> {
     return new Promise((resolve, reject) => {

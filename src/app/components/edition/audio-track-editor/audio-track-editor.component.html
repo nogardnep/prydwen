@@ -1,0 +1,25 @@
+<div *ngIf="track !== null">
+  <h3>Track {{ track.num }} <span class="entity-id">({{ track.id }})</span></h3>
+  <div>
+    <label [for]="makeIdFor('name')">Name</label>
+    <input [id]="makeIdFor('name')" type="text" [(ngModel)]="track.name" />
+  </div>
+  <div>
+    <app-audio-track-arm-for-recording [track]="track"></app-audio-track-arm-for-recording>
+  </div>
+  <div *ngIf=" track.resource !==null">
+    <span>Audio: {{ track.resource.path }}</span>
+    <button (click)="onClickPlay()">Play</button>
+    <button (click)="onClickPause()">Pause</button>
+    <button (click)="onClickStop()">Stop</button>
+  </div>
+  <select [(ngModel)]="track.resource" (change)="onChangeAudio()">
+    <option [ngValue]="null" [selected]="track.resource === null">Empty</option>
+    <option *ngFor="let resource of availableResources" [ngValue]="resource"
+      [selected]="track.resource !== null && track.resource.path === resource.path">
+      {{resource.path}}
+    </option>
+  </select>
+
+  <app-parameters-editor [parametersModel]="getParametersModel()" [entity]="track" (changed)="onChangeParameter($event)"></app-parameters-editor>
+</div>

@@ -1,16 +1,18 @@
-<h2>Project</h2>
-<button (click)="onClickOpenProject()">Open project</button>
-<button (click)="onClickCreateProject()">Create project</button>
+<div class="project">
+  <h2>Project</h2>
+  <button (click)="onClickOpenProject()">Open project</button>
+  <button (click)="onClickCreateProject()">Create project</button>
 
 
-<div *ngIf="project !== null">
-  <div>location: {{ currentPath }}</div>
-  <div>
+  <div *ngIf="project !== null">
+    <div>location: {{ currentPath }}</div>
     <div>
-      <label for="project-name">Name</label>
-      <input id="project-name" type="text" [(ngModel)]="project.name" />
+      <div>
+        <label for="project-name">Name</label>
+        <input id="project-name" type="text" [(ngModel)]="project.name" />
+      </div>
     </div>
+    <button (click)="onClickSaveProject()">Save</button>
+    <button (click)="onClickDeleteProject()">Delete project</button>
   </div>
-  <button (click)="onClickSaveProject()">Save</button>
-  <button (click)="onClickDeleteProject()">Delete project</button>
 </div>

@@ -1,19 +1,26 @@
+import { PathManager } from './../utils/path-manager';
 import { NextFunction, Request, Response } from 'express';
 import { ExplorerManager } from '../utils/explorer-manager';
 import { LogManager, LogType } from '../utils/log-manager';
-import { resourceTypes } from './../../api/entities/Resource';
+import { resourceTypes } from './../../models/entities/Resource';
 
 const fs = require('fs-extra');
 
 export class FileController {
   static getAll(req: Request, res: Response, next: NextFunction): void {
-    const path = req.params[0];
-    const typeKeys = req.params['types'];
+    const path = PathManager.getOneProjectPath(req.params[0]);
+    const typeKeys = req.params.types;
     const extension = FileController.makeExtensions(typeKeys);
 
-    ExplorerManager.getFilesIn(req.params[0], extension)
+    ExplorerManager.getFilesIn(path, extension)
       .then((items: string[]) => {
-        res.status(200).json(items);
+        const files = [];
+
+        items.forEach((item: string) => {
+          files.push(item.replace(path + '/', ''));
+        });
+
+        res.status(200).json(files);
       })
       .catch((error: string) => {
         res.status(400).json(error);
@@ -22,26 +29,27 @@ export class FileController {
   }
 
   static getSrc(req: Request, res: Response, next: NextFunction): void {
-    const path = req.params[0];
+    const path = PathManager.getOneProjectPath(req.params[0]);
+
     res.sendFile(path);
   }
 
   static store(req: Request, res: Response, next: NextFunction): void {
-    const path = req.params[0];
+    const path = PathManager.getOneProjectPath(req.params[0]);
+    console.log(path);
 
     res.status(200).json(path);
   }
 
   static delete(req: Request, res: Response, next: NextFunction): void {
-    const path = req.params[0];
+    const path = PathManager.getOneProjectPath(req.params[0]);
 
     fs.remove(path)
       .then(() => {
-        console.log(path)
         res.status(200).json(true);
       })
       .catch((error) => {
-        console.log(error)
+        console.log(error);
         res.status(400).json(error);
       });
   }
@@ -53,6 +61,7 @@ export class FileController {
       if (resourceTypes[typeKey] !== undefined) {
         resourceTypes[typeKey].forEach((extension: string) => {
           extensions.push(extension);
+          extensions.push(extension.toUpperCase());
         });
       }
     });

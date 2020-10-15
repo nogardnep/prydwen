@@ -11,3 +11,7 @@ if (environment.production) {
 platformBrowserDynamic()
   .bootstrapModule(AppModule)
   .catch((err) => console.error(err));
+
+  // import * as workerPath from "file-loader?name=[name].js!./worker.worker";
+
+  // const worker = new Worker(workerPath);

@@ -11,7 +11,7 @@ import { ProjectsDataService } from './../../../services/data/projects-data.serv
   styleUrls: ['./project-loader-page.component.scss'],
 })
 export class ProjectLoaderPageComponent implements OnInit {
-  projectPaths: string[];
+  projectPaths: string[] = [];
   loading = true;
 
   constructor(

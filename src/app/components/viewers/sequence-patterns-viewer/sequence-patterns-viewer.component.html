@@ -1,8 +1,0 @@
-<div *ngIf="sequence != null">
-  <button (click)="onClickAddPattern()">Add pattern</button>
-  <ul>
-    <li *ngFor="let pattern of getPatterns()">
-      <app-sequence-pattern-view [sequence]="sequence" [pattern]="pattern"></app-sequence-pattern-view>
-    </li>
-  </ul>
-</div>

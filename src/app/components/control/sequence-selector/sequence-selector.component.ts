@@ -1,8 +1,9 @@
-import { Project } from './../../../../api/entities/Project';
+import { EntityUtils } from './../../../utils/EntityUtils';
+import { Project } from './../../../../models/entities/Project';
 import { ProjectManagerService } from './../../../services/managers/project-manager.service';
 import { SelectionService } from './../../../services/control/selection.service';
 import { Subscription } from 'rxjs';
-import { Sequence } from './../../../../api/entities/Sequence';
+import { Sequence } from './../../../../models/entities/Sequence';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
 @Component({
@@ -43,6 +44,26 @@ export class SequenceSelectorComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.selectedSequenceSubscription.unsubscribe();
     this.selectedProjectSubscription.unsubscribe();
+  }
+
+  onClickPrevious(): void {
+    this.moveIn(-1);
+  }
+
+  onClickNext(): void {
+    this.moveIn(1);
+  }
+
+  private moveIn(modification: number): void {
+    const target = EntityUtils.moveIn(
+      this.projectManagerService.getCurrentProject().sequences,
+      this.selectedSequence,
+      modification
+    ) as Sequence;
+
+    if (target !== null) {
+      this.selectionService.selectSequence(target);
+    }
   }
 
   onChangeSequence(sequence: Sequence): void {

@@ -1,5 +1,5 @@
 import { ProjectManagerService } from './../../../services/managers/project-manager.service';
-import { Project } from './../../../../api/entities/Project';
+import { Project } from './../../../../models/entities/Project';
 import { Subscription } from 'rxjs';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 

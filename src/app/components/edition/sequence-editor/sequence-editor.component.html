@@ -1,8 +1,9 @@
 <div *ngIf="sequence !== null">
-<h2>Sequence</h2>
+<h3>Sequence {{ sequence.num }} <span class="entity-id">({{ sequence.id }})</span></h3>
   <div>
     <label [for]="makeIdFor('name')">Name</label>
     <input [id]="makeIdFor('name')" type="text" [(ngModel)]="sequence.name" />
   </div>
-  <app-parameters-editor [parametersModel]="getParametersModel()" [entity]="sequence"></app-parameters-editor>
+  <app-time-signature [model]="sequence" (changed)="onChangeTimeSignature()"></app-time-signature>
+  <app-parameters-editor (changed)="onChangeParameter($event)" [parametersModel]="getParametersModel()" [entity]="sequence"></app-parameters-editor>
 </div>

@@ -1,7 +1,7 @@
 import { UIService } from './../../../services/ui/ui.service';
 import { ProjectManagerService } from './../../../services/managers/project-manager.service';
 import { Subscription } from 'rxjs';
-import { Resource } from './../../../../api/entities/Resource';
+import { Resource } from './../../../../models/entities/Resource';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
 @Component({

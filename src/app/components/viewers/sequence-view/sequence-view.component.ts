@@ -1,9 +1,11 @@
+import { pages } from './../../../../config/pages';
+import { Router } from '@angular/router';
 import { EntityView } from './../EntityView';
 import { config } from 'src/config/config';
 import { EntityUtils } from './../../../utils/EntityUtils';
 import { UIService } from './../../../services/ui/ui.service';
 import { Component, Input, OnInit } from '@angular/core';
-import { Sequence } from './../../../../api/entities/Sequence';
+import { Sequence } from './../../../../models/entities/Sequence';
 import { SelectionService } from './../../../services/control/selection.service';
 import { ProjectManagerService } from './../../../services/managers/project-manager.service';
 
@@ -20,13 +22,15 @@ export class SequenceViewComponent implements OnInit, EntityView {
   constructor(
     private selectionService: SelectionService,
     private projectManagerService: ProjectManagerService,
-    private uiService: UIService
+    private uiService: UIService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {}
 
   onClickSelect(): void {
     this.selectionService.selectSequence(this.sequence);
+    this.router.navigate(['/' + pages.sequence.path]);
   }
 
   onClickRemove(): void {

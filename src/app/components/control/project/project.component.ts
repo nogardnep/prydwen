@@ -2,7 +2,7 @@ import { pages } from '../../../../config/pages';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { Project } from './../../../../api/entities/Project';
+import { Project } from './../../../../models/entities/Project';
 import { ProjectManagerService } from './../../../services/managers/project-manager.service';
 
 @Component({

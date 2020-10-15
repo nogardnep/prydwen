@@ -1,13 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Project } from './../../../../api/entities/Project';
-import { Sequence } from './../../../../api/entities/Sequence';
-import { Position } from './../../../../api/utils/Position';
+import { Project } from './../../../../models/entities/Project';
+import { Sequence } from './../../../../models/entities/Sequence';
+import { Position } from './../../../../models/utils/Position';
 import { SelectionService } from './../../../services/control/selection.service';
 import { ProjectManagerService } from './../../../services/managers/project-manager.service';
+import { AudioPlayerService } from './../../../services/mecanism/audio-player.service';
+import { PlayerService } from './../../../services/mecanism/player.service';
 import { RecorderService } from './../../../services/mecanism/recorder.service';
 import { SequencerOutputService } from './../../../services/mecanism/sequencer-output.service';
-import { SequencerService } from './../../../services/mecanism/sequencer.service';
 
 @Component({
   selector: 'app-sequencer-player',
@@ -30,11 +31,12 @@ export class SequencerPlayerComponent implements OnInit, OnDestroy {
   selectedProjectSubcription: Subscription;
 
   constructor(
-    private sequencerService: SequencerService,
+    private playerService: PlayerService,
     private sequencerOutputService: SequencerOutputService,
     private selectionService: SelectionService,
     private recorderService: RecorderService,
-    private projectManagerService: ProjectManagerService
+    private projectManagerService: ProjectManagerService,
+    private audioPlayerService: AudioPlayerService
   ) {}
 
   ngOnInit(): void {
@@ -79,10 +81,7 @@ export class SequencerPlayerComponent implements OnInit, OnDestroy {
           this.project = project;
 
           // TODO: move
-          this.sequencerService.switchMetronome(this.project.metronome.muted);
-          this.sequencerService.setMetronomeVolume(
-            this.project.metronome.volume
-          );
+          this.audioPlayerService.updateMetronome(this.project.metronome);
         }
       }
     );
@@ -98,7 +97,7 @@ export class SequencerPlayerComponent implements OnInit, OnDestroy {
   }
 
   onClickPlay(): void {
-    this.sequencerService.play();
+    this.playerService.play();
   }
 
   onClickRecord(): void {
@@ -108,21 +107,20 @@ export class SequencerPlayerComponent implements OnInit, OnDestroy {
   }
 
   onClickPause(): void {
-    this.sequencerService.pause();
+    this.playerService.play();
   }
 
   onClickStop(): void {
-    this.recorderService.stop();
-    this.sequencerService.stop();
+    this.playerService.stop();
   }
 
   onClickSwitchMetronome(): void {
     // TODO: move
     this.project.metronome.muted = !this.project.metronome.muted;
-    this.sequencerService.switchMetronome(this.project.metronome.muted);
+    this.audioPlayerService.updateMetronome(this.project.metronome);
   }
 
-  onChangeMetronomeVolume(volume: number): void {
-    this.sequencerService.setMetronomeVolume(volume);
+  onChangeMetronomeVolume(): void {
+    this.audioPlayerService.updateMetronome(this.project.metronome);
   }
 }

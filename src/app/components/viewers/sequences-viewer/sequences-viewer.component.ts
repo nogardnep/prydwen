@@ -1,8 +1,8 @@
-import { Sequence } from './../../../../api/entities/Sequence';
+import { Sequence } from './../../../../models/entities/Sequence';
 import { SelectionService } from './../../../services/control/selection.service';
 import { ProjectManagerService } from './../../../services/managers/project-manager.service';
 import { Subscription } from 'rxjs';
-import { Project } from './../../../../api/entities/Project';
+import { Project } from './../../../../models/entities/Project';
 import { Component, OnInit } from '@angular/core';
 
 @Component({

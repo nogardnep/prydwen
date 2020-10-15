@@ -1,32 +1,34 @@
 export class Clock {
-  private expected: number;
-  private timeout: any; // TODO
-  private delay: number;
+  private worker: Worker;
 
-  constructor(private timeInterval: number, private callback: () => void) {
-    this.delay = 10;
+  constructor(private callback: () => void) {
+    this.worker = new Worker('./clock.worker', { type: 'module' });
+
+    this.worker.onmessage = (event: MessageEvent) => {
+      switch (event.data.type) {
+        case 'tick':
+          this.callback();
+          break;
+      }
+    };
   }
 
   start(): void {
-    stop();
-    this.expected = Date.now();
-    this.moveOn();
+    this.worker.postMessage({
+      type: 'start',
+    });
   }
 
   stop(): void {
-    if (this.timeout !== null) {
-      clearTimeout(this.timeout);
-    }
+    this.worker.postMessage({
+      type: 'stop',
+    });
   }
 
-  private moveOn(): void {
-    if (Date.now() >= this.expected) {
-      this.callback();
-      this.expected += this.timeInterval;
-    }
-
-    this.timeout = setTimeout(() => {
-      this.moveOn();
-    }, this.delay);
+  setInterval(value: number): void {
+    this.worker.postMessage({
+      type: 'interval',
+      value,
+    });
   }
 }

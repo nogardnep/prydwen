@@ -1,0 +1,8 @@
+<div *ngIf="project != null">
+  <button (click)="onClickAddTrack()">Add track</button>
+  <ul>
+    <li *ngFor="let track of getTracks()">
+      <app-audio-track-view [track]="track"></app-audio-track-view>
+    </li>
+  </ul>
+</div>

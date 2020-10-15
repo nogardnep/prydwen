@@ -7,8 +7,8 @@ export const config = {
   projectsPath: 'projects',
   trackPresetsPath: 'presets',
   resourcesPath: 'resources',
-  projectDataFileName: 'project.json',
-  presetDataFileName: 'preset.json',
+  projectDataFileName: '_project.json',
+  presetDataFileName: '_preset.json',
   entities: {
     firstNum: 1,
     maxNum: 1000,
@@ -21,7 +21,7 @@ export const config = {
     explorer: 'explorer',
   },
   sequencer: {
-    ticksByBeat: 12,
+    ticksByBeat: 1,
     timeSignature: {
       step: {
         min: 3,
@@ -31,7 +31,7 @@ export const config = {
         min: 1,
         max: 16,
       },
-      mesure: {
+      measure: {
         min: 1,
         max: 16,
       },

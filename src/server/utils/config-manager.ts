@@ -1,4 +1,4 @@
-import { UserConfiguration } from './../../api/utils/userConfig';
+import { UserConfiguration } from './../../models/utils/userConfig';
 import { config } from './../../config/config';
 import * as fs from 'fs-extra';
 

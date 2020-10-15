@@ -1,4 +1,4 @@
-import { UserConfiguration } from './../../../../api/utils/userConfig';
+import { UserConfiguration } from './../../../../models/utils/userConfig';
 import { Location } from '@angular/common';
 import { ConfigurationDataService } from './../../../services/data/configuration-data.service';
 import { Component, OnInit } from '@angular/core';
@@ -33,7 +33,7 @@ export class ConfigurationPageComponent implements OnInit {
 
   onSubmit(ngForm: NgForm): void {
     const configuration = ngForm.form.value as UserConfiguration;
-    configuration.dataRoot = configuration.dataRoot.replace(/\\/g, '/'); // TODO: does not work
+    configuration.projectsRoot = configuration.projectsRoot.replace(/\\/g, '/').replace(/\/$/, '');
 
     this.configurationDataService.update(configuration).then(() => {
       this.location.back();

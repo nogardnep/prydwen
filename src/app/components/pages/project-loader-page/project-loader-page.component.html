@@ -6,5 +6,6 @@
   <div *ngFor="let path of projectPaths">
     <button (click)="onClickProject(path)">{{ path }}</button>
   </div>
+  <div *ngIf="projectPaths.length === 0">No project found</div>
 </div>
 <button (click)="onClickCancel()">Cancel</button>

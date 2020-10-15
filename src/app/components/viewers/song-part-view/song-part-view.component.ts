@@ -1,10 +1,10 @@
 import { config } from 'src/config/config';
-import { Song } from 'src/api/entities/Song';
+import { Song } from 'src/models/entities/Song';
 import { UIService } from './../../../services/ui/ui.service';
 import { ProjectManagerService } from './../../../services/managers/project-manager.service';
 import { SelectionService } from './../../../services/control/selection.service';
 import { Component, Input, OnInit } from '@angular/core';
-import { SongPart } from './../../../../api/entities/SongPart';
+import { SongPart } from './../../../../models/entities/SongPart';
 import { EntityView } from '../EntityView';
 
 @Component({

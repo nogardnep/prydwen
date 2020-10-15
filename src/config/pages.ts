@@ -8,8 +8,14 @@ export const pages = {
   sequences: {
     path: 'sequences',
   },
+  sequence: {
+    path: 'sequence',
+  },
   patterns: {
     path: 'patterns',
+  },
+  tracks: {
+    path: 'tracks',
   },
   projectLoader: {
     path: 'project-loader',

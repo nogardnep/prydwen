@@ -1,50 +1,141 @@
-import { AudioPlayer as IAudioPlayer } from '../api/machine/AudioPlayer';
+import { PositionWrapper } from './../models/wrappers/PositionWrapper';
+import { Metronome } from './../models/entities/Metronome';
+import * as Tone from 'tone';
+import { AudioPlayer as IAudioPlayer } from '../models/mecanisms/AudioPlayer';
+import { ParameterUtils } from './../app/utils/ParameterUtils';
+import {
+  AudioTrack,
+  audioTrackParametersModel,
+  Reverse,
+} from './../models/entities/AudioTrack';
 
-export type Channels = {
-  [key: string]: GainNode;
+type PlayerTracks = {
+  [id: number]: PlayerTrack;
 };
 
+type PlayerTrack = {
+  entity: AudioTrack;
+  player: Tone.Player;
+};
+
+type MetronomePlayer = {
+  beat: Tone.Player;
+  measure: Tone.Player;
+};
 
 export class AudioPlayer implements IAudioPlayer {
   private audioContext: AudioContext;
-
-  channels: Channels = {
-    master: null,
-    metronome: null,
-    patterns: null,
-  };
+  private tracks: PlayerTracks = {};
+  private metronomePlayer: MetronomePlayer;
+  private metronome: Metronome;
 
   constructor() {
+    this.initMetronomePlayer();
     this.audioContext = new AudioContext();
-
-    // this.channels.master = this.audioContext.createGain();
-    // this.channels.master.connect(this.audioContext.destination);
-    // this.channels.metronome = this.audioContext.createGain();
-    // this.channels.metronome.connect(this.channels.master);
-    // this.channels.patterns = this.audioContext.createGain();
-    // this.channels.patterns.connect(this.channels.master);
-    // this.channels.metronome.connect(this.audioContext.destination);
+    window.addEventListener('click', this.init);
   }
 
-  play(src: string): void {
+  private init = (): void => {
+    Tone.start().then(() => {
+      console.log('audio is ready');
+
+    });
+
+    window.removeEventListener('click', this.init);
+  };
+
+  playMetronome(positionWrapper: PositionWrapper): void {
+    if (!this.metronome.muted) {
+      if (positionWrapper.onMeasure()) {
+        this.metronomePlayer.measure.start();
+      } else if (positionWrapper.onBeat()) {
+        this.metronomePlayer.beat.start();
+      }
+    }
+  }
+
+  updateMetronome(metronome: Metronome): void {
+    this.metronome = metronome;
+  }
+
+  updateTrack(track: AudioTrack, src: string): void {
+    console.log('updateTrack');
+    if (src !== null) {
+      const player = new Tone.Player();
+
+      this.tracks[track.id] = {
+        entity: track,
+        player,
+      };
+
+      player.toDestination();
+      player.load(src);
+      this.applyParameters(this.tracks[track.id]);
+    } else {
+      this.tracks[track.id] = null;
+    }
+  }
+
+  private applyParameters(playerTrack: PlayerTrack): void {
+    playerTrack.player.fadeIn = ParameterUtils.getParameter(
+      playerTrack.entity,
+      audioTrackParametersModel,
+      'fadein'
+    );
+
+    playerTrack.player.fadeOut = ParameterUtils.getParameter(
+      playerTrack.entity,
+      audioTrackParametersModel,
+      'fadeout'
+    );
+
+    playerTrack.player.loopStart = ParameterUtils.getParameter(
+      playerTrack.entity,
+      audioTrackParametersModel,
+      'loopStart'
+    );
+
+    playerTrack.player.loopEnd = ParameterUtils.getParameter(
+      playerTrack.entity,
+      audioTrackParametersModel,
+      'loopEnd'
+    );
+
+    playerTrack.player.reverse =
+      ParameterUtils.getParameter(
+        playerTrack.entity,
+        audioTrackParametersModel,
+        'reverse'
+      ) === Reverse.Reverse
+        ? true
+        : false;
+  }
+
+  playTrack(track: AudioTrack): void {
+    if (this.tracks[track.id] !== null) {
+      this.tracks[track.id].player.start(0);
+    }
+  }
+
+  pauseTrack(track: AudioTrack): void {
+    if (this.tracks[track.id] !== null) {
+      this.tracks[track.id].player.stop();
+    }
+  }
+
+  stopTrack(track: AudioTrack): void {
+    if (this.tracks[track.id] !== null) {
+      this.tracks[track.id].player.stop();
+      this.tracks[track.id].player.restart();
+    }
+  }
+
+  playSimpleAudio(src: string): void {
     this.load(src, (buffer: AudioBuffer) => {
       const source = this.makeSourceFor(buffer);
       source.start();
     });
   }
-
-  // play(buffer: AudioBuffer, destination: GainNode): void {
-  //   const source = this.audioContext.createBufferSource();
-  //   source.buffer = buffer;
-  //   source.connect(destination);
-  //   source.start();
-  // }
-
-  // stopAll(): void {
-  //   if (this.source !== null) {
-  //     this.source.stop();
-  //   }
-  // }
 
   load(url: string, callback: (buffer: AudioBuffer) => void): void {
     const request = new XMLHttpRequest();
@@ -68,5 +159,16 @@ export class AudioPlayer implements IAudioPlayer {
 
   getAudioContext(): AudioContext {
     return this.audioContext;
+  }
+
+  private initMetronomePlayer(): void {
+    this.metronomePlayer = {
+      beat: new Tone.Player(
+        'assets/metronome/metronome-beat.wav'
+      ).toDestination(),
+      measure: new Tone.Player(
+        'assets/metronome/metronome-measure.wav'
+      ).toDestination(),
+    };
   }
 }

@@ -1,12 +1,11 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'filename'
+  name: 'filename',
 })
 export class FilenamePipe implements PipeTransform {
-
-  transform(value: unknown, ...args: unknown[]): unknown {
-    return null;
+  transform(value: string): string {
+    const parts = value.split('/');
+    return parts[parts.length - 1];
   }
-
 }

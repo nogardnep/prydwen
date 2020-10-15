@@ -1,60 +1,45 @@
-import { PositionWrapper } from '../api/wrappers/PositionWrapper';
-import { Metronome } from './../api/machine/Metronome';
-import { AudioPlayer } from './../api/machine/AudioPlayer';
-import { Sequencer as ISequencer } from '../api/machine/Sequencer';
-import { Position } from '../api/utils/Position';
-import { SequencerOutputs } from './../api/machine/SequencerOutputs';
-import { TimeSignature } from './../api/utils/TimeSignature';
+import { ParameterUtils } from './../app/utils/ParameterUtils';
+import {
+  Sequence,
+  sequenceParametersModel,
+} from './../models/entities/Sequence';
+import { Sequencer as ISequencer } from '../models/mecanisms/Sequencer';
+import { Position } from '../models/utils/Position';
+import { PositionWrapper } from '../models/wrappers/PositionWrapper';
+import { config } from './../config/config';
+import { AudioPlayer as IAudioPlayer } from './../models/mecanisms/AudioPlayer';
+import { SequencerOutputs } from './../models/mecanisms/SequencerOutputs';
+import { TimeSignature } from './../models/utils/TimeSignature';
 import { Clock } from './Clock';
-
-import * as Tone from 'tone'
-
+import { connectSignal } from 'tone';
 
 export class Sequencer implements ISequencer {
-  private clock: Clock;
+  private clock: Clock; // TODO
   private positionWrapper: PositionWrapper;
-  private metronome: Metronome;
   private playing = false;
 
   constructor(
-    private audioPlayer: AudioPlayer,
+    private audioPlayer: IAudioPlayer,
     private outputs: SequencerOutputs
   ) {
     this.positionWrapper = new PositionWrapper(
       {
         tick: 0,
         beat: 0,
-        mesure: 0,
+        measure: 0,
         turn: 0,
       } as Position,
       {
         step: 4,
         beat: 4,
-        mesure: 1,
+        measure: 1,
       } as TimeSignature
     );
 
-    this.metronome = {
-      volume: 1,
-      muted: false,
-    };
-
-    this.clock = new Clock(500, () => {
+    this.clock = new Clock(() => {
       this.move();
     });
-
-    // const clock = new Tone.Clock(time => {
-    //   console.log(time);
-    // }, 1);
-    // clock.start();
-
-    Tone.start()
-
-    const clock = new Tone.Clock(time => {
-      this.move();
-    }, 2);
-
-    // clock.start();
+    this.setBpm(100);
 
     this.sendPosition();
   }
@@ -62,16 +47,10 @@ export class Sequencer implements ISequencer {
   move(): void {
     this.sendPosition();
 
-    if (!this.metronome.muted) {
-      if (this.positionWrapper.onMesure()) {
-        this.audioPlayer.play('assets/metronome/metronome-mesure.wav');
-      } else if (this.positionWrapper.onBeat()) {
-        this.audioPlayer.play('assets/metronome/metronome-beat.wav');
-      }
-    }
+    this.audioPlayer.playMetronome(this.positionWrapper);
 
     this.positionWrapper.move({
-      tick: 12,
+      tick: 1,
     } as Position);
   }
 
@@ -93,12 +72,17 @@ export class Sequencer implements ISequencer {
     this.clock.stop();
   }
 
-  switchMetronome(muted: boolean): void {
-    this.metronome.muted = muted;
+  updateSequence(sequence: Sequence): void {
+    this.setBpm(
+      ParameterUtils.getParameter(sequence, sequenceParametersModel, 'bpm')
+    );
+
+    this.positionWrapper.setTimeSignature(sequence.timeSignature);
   }
 
-  setMetronomeVolume(volume: number): void {
-    this.metronome.volume = volume;
+  private setBpm(bpm: number): void {
+    const interval = ((60 / bpm) * 1000) / config.sequencer.ticksByBeat;
+    this.clock.setInterval(interval);
   }
 
   private setPlaying(playing: boolean): void {

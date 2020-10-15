@@ -1,27 +1,38 @@
 <div *ngIf="pattern !== null">
-  <h2>Pattern {{ pattern.num }}</h2>
+  <h3>Pattern {{ pattern.num }} <span class="entity-id">({{ pattern.id }})</span></h3>
+  <div>
+    <button (click)="onClickPlay()">Play</button>
+    <button (click)="onClickPause()">Pause</button>
+    <button (click)="onClickStop()">Stop</button>
+  </div>
   <div>
     <label [for]="makeIdFor('name')">Name</label>
     <input [id]="makeIdFor('name')" type="text" [(ngModel)]="pattern.name" />
   </div>
   <div>
-    <div>
-      <label [for]="makeIdFor('arm-for-playing')">Arm for playing</label>
-      <input [id]="makeIdFor('arm-for-playing')" type="checkbox" [(ngModel)]="pattern.armedForPlaying">
-    </div>
-    <app-pattern-arm-for-recording [pattern]="pattern"></app-pattern-arm-for-recording>
   </div>
-  <div *ngIf=" pattern.audio.resource !==null">
-    <span>Audio: {{ pattern.audio.resource.path }}</span>
-    <app-audio [src]="pattern.audio.resource.src"></app-audio>
-  </div>
-  <select [(ngModel)]="pattern.audio.resource" (change)="onChangeAudio()">
-    <option [ngValue]="null" [selected]="pattern.audio.resource === null">Empty</option>
-    <option *ngFor="let resource of availableResources" [ngValue]="resource"
-      [selected]="pattern.audio.resource !== null && pattern.audio.resource.path === resource.path">
-      {{resource.path}}
-    </option>
-  </select>
-
+  <app-time-signature [model]="pattern" (changed)="onChangeTimeSignature()"></app-time-signature>
   <app-parameters-editor [parametersModel]="getParametersModel()" [entity]="pattern"></app-parameters-editor>
+  <div>
+    <div *ngFor="let patternAudioTrack of getPatterAudioTracks()">
+      <div>
+        <div>
+          <span>{{ patternAudioTrack.num }}</span>
+          <button (click)="onClickDecreaseNum(patternAudioTrack)">down</button>
+          <button (click)="onClickIncreaseNum(patternAudioTrack)">up</button>
+        </div>
+        <div>
+          <label [for]="makeIdForTrack(patternAudioTrack, 'armed')">Armed</label>
+          <input [id]="makeIdForTrack(patternAudioTrack, 'armed')" type="checkbox"
+            [(ngModel)]="patternAudioTrack.armed" />
+        </div>
+        <div *ngIf="getAudioTrack(patternAudioTrack) === null">Unfound track ({{ patternAudioTrack.trackId }})</div>
+        <app-audio-track-editor [track]="getAudioTrack(patternAudioTrack)"></app-audio-track-editor>
+        <button (click)="onClickRemoveAudioTrack(patternAudioTrack)">Remove</button>
+      </div>
+    </div>
+  </div>
+  <div>
+    <button (click)="onClickAddAudioTrack()">Add track</button>
+  </div>
 </div>

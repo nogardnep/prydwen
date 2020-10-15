@@ -1,6 +1,6 @@
-import { ParameterWrapper } from './../../../../api/wrappers/ParameterWrapper.model';
-import { Entity } from './../../../../api/entities/Entity';
-import { ParametersModel } from './../../../../api/parameters/Parameter';
+import { ParameterWrapper } from './../../../../models/wrappers/ParameterWrapper.model';
+import { Entity } from './../../../../models/entities/Entity';
+import { ParametersModel } from './../../../../models/parameters/Parameter';
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 
 @Component({

@@ -1,5 +1,9 @@
-<select [ngModel]="selectedSequence" (ngModelChange)="onChangeSequence($event)">
-  <option *ngFor="let sequence of getSequences()" [ngValue]="sequence">{{ sequence.num + (sequence.name? '. ' + sequence.name : '') }}
-  </option>
-</select>
-
+<div>
+  <button (click)="onClickPrevious()">{{ '<-' }}</button>
+  <select [ngModel]="selectedSequence" (ngModelChange)="onChangeSequence($event)">
+    <option *ngFor="let sequence of getSequences()" [ngValue]="sequence">
+      {{ sequence.num + (sequence.name? '. ' + sequence.name : '') }}
+    </option>
+  </select>
+  <button (click)="onClickNext()">{{ '->' }}</button>
+</div>

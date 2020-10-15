@@ -1,4 +1,4 @@
-import { Position } from './../../../../api/utils/Position';
+import { Position } from './../../../../models/utils/Position';
 import { Component, OnInit, Input } from '@angular/core';
 
 @Component({

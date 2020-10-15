@@ -1,4 +1,4 @@
-import { UserConfiguration } from './../../api/utils/userConfig';
+import { UserConfiguration } from './../../models/utils/userConfig';
 import { Request, Response } from 'express';
 import { ConfigMangager } from '../utils/config-manager';
 import * as fs from 'fs';

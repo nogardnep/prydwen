@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { config } from 'src/config/config';
 
@@ -6,10 +5,16 @@ import { config } from 'src/config/config';
   providedIn: 'root',
 })
 export class ServerService {
-  constructor(private httpClient: HttpClient) {}
+  currentPath: string;
 
-  makeSrcFor(absolutePath: string): string {
-    return this.makeUrl(config.routes.file) + '/src/' + absolutePath;
+  constructor() {}
+
+  setCurrentPath(path: string): void {
+    this.currentPath = path;
+  }
+
+  getCurrentPath(): string {
+    return this.currentPath;
   }
 
   makeUrl(path: string): string {

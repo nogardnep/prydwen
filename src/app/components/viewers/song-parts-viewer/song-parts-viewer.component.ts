@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Song } from 'src/api/entities/Song';
-import { SongPart } from './../../../../api/entities/SongPart';
+import { Song } from 'src/models/entities/Song';
+import { SongPart } from './../../../../models/entities/SongPart';
 import { SelectionService } from './../../../services/control/selection.service';
 import { ProjectManagerService } from './../../../services/managers/project-manager.service';
 

@@ -1,0 +1,4 @@
+<h2>Selection</h2>
+<app-sequence-editor *ngIf="selectedSequence !== null" [sequence]="selectedSequence"></app-sequence-editor>
+<app-pattern-editor *ngIf="selectedPattern !== null" [pattern]="selectedPattern"></app-pattern-editor>
+<app-audio-track-editor *ngIf="selectedTrack !== null" [track]="selectedTrack"></app-audio-track-editor>

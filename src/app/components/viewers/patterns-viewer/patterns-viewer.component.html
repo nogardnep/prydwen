@@ -1,0 +1,8 @@
+<div *ngIf="project != null">
+  <button (click)="onClickAddPattern()">Add pattern</button>
+  <ul>
+    <li *ngFor="let pattern of getPatterns()">
+      <app-pattern-view [pattern]="pattern"></app-pattern-view>
+    </li>
+  </ul>
+</div>

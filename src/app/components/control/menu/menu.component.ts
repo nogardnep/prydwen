@@ -27,6 +27,10 @@ export class MenuComponent implements OnInit {
       path: pages.patterns.path,
     },
     {
+      title: 'Tracks',
+      path: pages.tracks.path,
+    },
+    {
       title: 'Resources',
       path: pages.resources.path,
     },

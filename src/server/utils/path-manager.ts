@@ -4,7 +4,7 @@ import { config } from '../../config/config';
 export class PathManager {
   static getGlobalResourcePath(): string {
     return (
-      ConfigMangager.getUserConfiguration().dataRoot +
+      ConfigMangager.getUserConfiguration().projectsRoot +
       '/' +
       config.resourcesPath
     );
@@ -16,7 +16,7 @@ export class PathManager {
 
   static getProjectsPath(): string {
     return (
-      ConfigMangager.getUserConfiguration().dataRoot + '/' + config.projectsPath
+      ConfigMangager.getUserConfiguration().projectsRoot
     );
   }
 
@@ -34,7 +34,7 @@ export class PathManager {
 
   static getTrackPresetsPath(): string {
     return (
-      ConfigMangager.getUserConfiguration().dataRoot +
+      ConfigMangager.getUserConfiguration().projectsRoot +
       '/' +
       config.trackPresetsPath
     );

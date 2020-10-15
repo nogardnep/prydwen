@@ -1,3 +1,4 @@
+import { ParameterUtils } from './../../../utils/ParameterUtils';
 import {
   Component,
   EventEmitter,
@@ -5,14 +6,13 @@ import {
   OnChanges,
   Output
 } from '@angular/core';
-import { EntityWithParameters } from './../../../../api/entities/EntityWithParameters';
+import { EntityWithParameters } from './../../../../models/entities/EntityWithParameters';
 import {
   ParameterLabel,
   ParametersModel,
   ParameterValue
-} from './../../../../api/parameters/Parameter';
-import { ParameterWrapper } from './../../../../api/wrappers/ParameterWrapper.model';
-import { ParametersService } from './../../../services/parameters/parameters.service';
+} from './../../../../models/parameters/Parameter';
+import { ParameterWrapper } from './../../../../models/wrappers/ParameterWrapper.model';
 
 type SelectOption = {
   value: ParameterValue;
@@ -35,10 +35,10 @@ export class ParameterEditorComponent implements OnChanges {
   max: number;
   name: string;
 
-  constructor(private parametersService: ParametersService) {}
+  constructor() {}
 
   ngOnChanges(): void {
-    this.parametersService.checkParameter(
+    ParameterUtils.checkParameter(
       this.entity,
       this.parametersModel,
       this.key
@@ -63,7 +63,7 @@ export class ParameterEditorComponent implements OnChanges {
     const options: SelectOption[] = [];
 
     for (let i = this.min; i <= this.max; i++) {
-      const label: ParameterLabel = this.parametersService.getLabelFor(
+      const label: ParameterLabel = ParameterUtils.getLabelFor(
         i,
         this.parametersModel[this.key]
       );

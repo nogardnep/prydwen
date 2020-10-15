@@ -1,14 +1,14 @@
 <div>
   <span>
     <label [for]="getIdFor('step')">Steps:</label>
-    <input [id]="getIdFor('step')" type="number" min="config.step.min" max="config.step.max" [(ngModel)]="model.timeSignature.step" />
+    <input [id]="getIdFor('step')" type="number" [min]="config.step.min" [max]="config.step.max" [(ngModel)]="model.timeSignature.step" (change)="onChange()" />
   </span>
   <span>
     <label [for]="getIdFor('beat')">Beats:</label>
-    <input [id]="getIdFor('beat')" type="number" min="config.beat.min" max="config.beat.max" [(ngModel)]="model.timeSignature.beat" />
+    <input [id]="getIdFor('beat')" type="number" [min]="config.beat.min" [max]="config.beat.max" [(ngModel)]="model.timeSignature.beat" (change)="onChange()" />
   </span>
   <span>
-    <label [for]="getIdFor('mesure')">Mesures:</label>
-    <input [id]="getIdFor('mesure')" type="number" min="config.mesure.min" max="config.mesure.max" [(ngModel)]="model.timeSignature.mesure" />
+    <label [for]="getIdFor('measure')">Mesures:</label>
+    <input [id]="getIdFor('measure')" type="number" [min]="config.measure.min" [max]="config.measure.max" [(ngModel)]="model.timeSignature.measure" (change)="onChange()" />
   </span>
 </div>

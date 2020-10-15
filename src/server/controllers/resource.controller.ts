@@ -1,25 +1,10 @@
+import { Resource, resourceTypes } from './../../models/entities/Resource';
 // TODO: delete?
 
 import { NextFunction, Request, Response } from 'express';
 import { PathManager } from '../utils/path-manager';
 const glob = require('glob');
 
-interface Resource {
-  path: string;
-  local: boolean;
-}
-
-type Extensions = string[];
-
-type ResourceType = {
-  [key: string]: Extensions;
-};
-
-const resourceTypes: ResourceType = {
-  image: ['jpg', 'png'],
-  audio: ['wav', 'mp3'],
-  video: ['avi', 'mp4'],
-};
 
 export class ResourceController {
   static getAllGlobal(req: Request, res: Response, next: NextFunction): void {

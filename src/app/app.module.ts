@@ -23,13 +23,10 @@ import { LoadingComponent } from './components/utils/loading/loading.component';
 import { TimeSignatureComponent } from './components/utils/time-signature/time-signature.component';
 import { FilenamePipe } from './pipes/filename.pipe';
 import { SequencerPlayerComponent } from './components/control/sequencer-player/sequencer-player.component';
-import { PatternComponent } from './components/edition/pattern/pattern.component';
 import { SequenceEditorComponent } from './components/edition/sequence-editor/sequence-editor.component';
 import { PatternEditorComponent } from './components/edition/pattern-editor/pattern-editor.component';
-import { SequencePatternsViewerComponent } from './components/viewers/sequence-patterns-viewer/sequence-patterns-viewer.component';
 import { SequencesViewerComponent } from './components/viewers/sequences-viewer/sequences-viewer.component';
 import { SequenceViewComponent } from './components/viewers/sequence-view/sequence-view.component';
-import { SequencePatternViewComponent } from './components/viewers/sequence-pattern-view/sequence-pattern-view.component';
 import { ResourcesViewerComponent } from './components/viewers/resources-viewer/resources-viewer.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SequenceSelectorComponent } from './components/control/sequence-selector/sequence-selector.component';
@@ -41,7 +38,15 @@ import { SongPageComponent } from './components/pages/song-page/song-page.compon
 import { SongPartsViewerComponent } from './components/viewers/song-parts-viewer/song-parts-viewer.component';
 import { SongPartViewComponent } from './components/viewers/song-part-view/song-part-view.component';
 import { SongPartEditorComponent } from './components/edition/song-part-editor/song-part-editor.component';
-import { PatternArmForRecordingComponent } from './components/utils/pattern-arm-for-recording/pattern-arm-for-recording.component';
+import { AudioTrackArmForRecordingComponent } from './components/utils/audio-track-arm-for-recording/audio-track-arm-for-recording.component';
+import { AudioTrackEditorComponent } from './components/edition/audio-track-editor/audio-track-editor.component';
+import { AudioTrackViewComponent } from './components/viewers/audio-track-view/audio-track-view.component';
+import { AudioTracksViewerComponent } from './components/viewers/audio-tracks-viewer/audio-tracks-viewer.component';
+import { TracksPageComponent } from './components/pages/tracks-page/tracks-page.component';
+import { SelectionSectionComponent } from './components/sections/selection-section/selection-section.component';
+import { PatternsViewerComponent } from './components/viewers/patterns-viewer/patterns-viewer.component';
+import { PatternViewComponent } from './components/viewers/pattern-view/pattern-view.component';
+import { SequencePageComponent } from './components/pages/sequence-page/sequence-page.component';
 
 @NgModule({
   declarations: [
@@ -63,13 +68,10 @@ import { PatternArmForRecordingComponent } from './components/utils/pattern-arm-
     TimeSignatureComponent,
     SequencerPlayerComponent,
     PositionComponent,
-    PatternComponent,
     SequenceEditorComponent,
     PatternEditorComponent,
-    SequencePatternsViewerComponent,
     SequencesViewerComponent,
     SequenceViewComponent,
-    SequencePatternViewComponent,
     ResourcesViewerComponent,
     SequenceSelectorComponent,
     ProjectHeaderComponent,
@@ -80,7 +82,15 @@ import { PatternArmForRecordingComponent } from './components/utils/pattern-arm-
     SongPartsViewerComponent,
     SongPartViewComponent,
     SongPartEditorComponent,
-    PatternArmForRecordingComponent,
+    AudioTrackArmForRecordingComponent,
+    AudioTrackEditorComponent,
+    AudioTrackViewComponent,
+    AudioTracksViewerComponent,
+    TracksPageComponent,
+    SelectionSectionComponent,
+    PatternsViewerComponent,
+    PatternViewComponent,
+    SequencePageComponent,
   ],
   imports: [
     RouterModule.forRoot(appRoutes),

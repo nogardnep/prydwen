@@ -1,0 +1,33 @@
+<app-global-header></app-global-header>
+<app-project-header></app-project-header>
+
+<div *ngIf="sequence !== null">
+  <h1>Sequence {{ sequence.num }}<span class="entity-id">({{ sequence.id }})</span>
+  </h1>
+  <button (click)="onClickRemoveSequence()">Remove sequence</button>
+  <app-sequence-selector></app-sequence-selector>
+  <div class="row">
+    <div class="col-sm-6">
+      <app-sequence-editor [sequence]="sequence"></app-sequence-editor>
+      <button (click)='onClickAddPattern()'>Add pattern</button>
+      <div *ngFor="let sequencePattern of getSequencePatterns()">
+        <app-pattern-view [pattern]="getPatternFor(sequencePattern)"></app-pattern-view>
+        <div>
+          <label [for]="makeIdForPattern(sequencePattern, 'looping')">Looping</label>
+          <input [id]="makeIdForPattern(sequencePattern, 'looping')" type="checkbox"
+            [(ngModel)]="sequencePattern.looping" />
+        </div>
+        <div>
+          <label [for]="makeIdForPattern(sequencePattern, 'armed')">Armed</label>
+          <input [id]="makeIdForPattern(sequencePattern, 'armed')" type="checkbox"
+            [(ngModel)]="sequencePattern.armed" />
+        </div>
+        <button (click)='onClickRemovePattern(sequencePattern)'>Remove</button>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div *ngIf="selectedPattern !== null"></div>
+      <app-pattern-editor [pattern]='selectedPattern'></app-pattern-editor>
+    </div>
+  </div>
+</div>

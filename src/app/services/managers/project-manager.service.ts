@@ -1,22 +1,26 @@
-import { EntityUtils } from './../../utils/EntityUtils';
-import { pages } from './../../../config/pages';
-import { Router } from '@angular/router';
+import { SequencesManagerService } from './sequences-manager.service';
+import { SequencerService } from './../mecanism/sequencer.service';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { messages } from 'src/config/messages';
-import { Entity } from './../../../api/entities/Entity';
-import { EntityWithNumber } from './../../../api/entities/EntityWithNumber';
-import { Pattern } from './../../../api/entities/Pattern';
-import { Project } from './../../../api/entities/Project';
-import { Resource, ResourceType } from './../../../api/entities/Resource';
-import { Sequence } from './../../../api/entities/Sequence';
-import { Song } from './../../../api/entities/Song';
-import { SongPart } from './../../../api/entities/SongPart';
+import { pages } from './../../../config/pages';
+import { AudioTrack } from './../../../models/entities/AudioTrack';
+import { Pattern } from './../../../models/entities/Pattern';
+import { Project } from './../../../models/entities/Project';
+import { Resource, ResourceType } from './../../../models/entities/Resource';
+import { Sequence, SequencePattern } from './../../../models/entities/Sequence';
+import { Song } from './../../../models/entities/Song';
+import { SongPart } from './../../../models/entities/SongPart';
+import { EntityUtils } from './../../utils/EntityUtils';
 import { SelectionService } from './../control/selection.service';
 import { ProjectsDataService } from './../data/projects-data.service';
 import { ResourcesDataService } from './../data/resources-data.service';
+import { ServerService } from './../data/server.service';
+import { AudioPlayerService } from './../mecanism/audio-player.service';
 import { UIService } from './../ui/ui.service';
 import { ResourcesManagerService } from './resources-manager.service';
+import { TracksManagerService } from './tracks-manager.service';
 
 @Injectable({
   providedIn: 'root',
@@ -25,6 +29,7 @@ export class ProjectManagerService {
   private currentProject: Project = null;
   private availableResources: Resource[] = [];
   private currentPath: string = null;
+
   currentProjectSubject = new Subject<Project>();
   availableResourcesSubject = new Subject<Resource[]>();
   currentPathSubject = new Subject<string>();
@@ -35,9 +40,11 @@ export class ProjectManagerService {
     private uiService: UIService,
     private resourcesManagerService: ResourcesManagerService,
     private selectionService: SelectionService,
-    private router: Router
+    private router: Router,
+    private tracksManagerService: TracksManagerService,
+    private serverService: ServerService,
+    private audioPlayerService: AudioPlayerService
   ) {}
-
   loadProject(path: string): Promise<Project> {
     this.uiService.setLoading(true);
     this.setAvailableResources([]);
@@ -54,10 +61,12 @@ export class ProjectManagerService {
             const defaultName = 'Unnamed';
 
             project = {
-              id: this.makeId(),
+              id: EntityUtils.makeId(),
               name: defaultName,
               songs: [],
               sequences: [],
+              patterns: [],
+              audioTracks: [],
               recording: {
                 countdown: 1,
               },
@@ -72,7 +81,13 @@ export class ProjectManagerService {
           this.uiService.setLoading(false);
           this.addDefaultEntities();
           this.selectDefault();
-          this.router.navigate(['/' + pages.patterns.path]);
+          // TODO
+          // this.router.navigate(['/' + pages.patterns.path]);
+
+          // TODO: move?
+          project.audioTracks.forEach((track: AudioTrack) => {
+            this.tracksManagerService.update(track);
+          });
 
           resolve(project);
         })
@@ -80,6 +95,10 @@ export class ProjectManagerService {
           reject(erorr);
         });
     });
+  }
+
+  makeSrc(resource: Resource): string {
+    return this.resourcesDataService.makeSrc(resource);
   }
 
   private addDefaultEntities(): void {
@@ -95,7 +114,8 @@ export class ProjectManagerService {
   private setProject(project: Project, path: string): void {
     this.currentProject = project;
     this.emitCurrentProject();
-    this.currentPath = path;
+    this.serverService.setCurrentPath(path);
+    this.currentPath = path; // TODO: delete?
     this.emitCurrentPath();
     this.updateResources();
   }
@@ -128,39 +148,54 @@ export class ProjectManagerService {
     return this.currentPath;
   }
 
-  addPattern(sequence: Sequence): Pattern {
+  addPattern(): Pattern {
     const newPattern = {
-      id: this.makeId(),
+      id: EntityUtils.makeId(),
       name: '',
-      num: this.makeNum(sequence.patterns),
+      num: EntityUtils.makeNum(this.currentProject.patterns),
       bank: 1,
-      armedForPlaying: false,
-      armedForRecording: false,
       looping: false,
+      audioTracks: [],
       timeSignature: {
         step: 4,
         beat: 4,
-        mesure: 1,
+        measure: 1,
       },
-      audio: {
-        resource: null,
-      },
-      video: {
-        resource: null,
-      },
+      events: [],
       parameters: {},
     };
 
-    sequence.patterns.push(newPattern);
+    this.currentProject.patterns.push(newPattern);
 
     return newPattern;
   }
 
+  addAudioTrack(): AudioTrack {
+    const newTrack = {
+      id: EntityUtils.makeId(),
+      name: '',
+      num: EntityUtils.makeNum(this.currentProject.audioTracks),
+      armedForRecording: false,
+      timeSignature: {
+        step: 4,
+        beat: 4,
+        measure: 1,
+      },
+      resource: null,
+      parameters: {},
+    };
+
+    this.currentProject.audioTracks.push(newTrack);
+    this.tracksManagerService.update(newTrack);
+
+    return newTrack;
+  }
+
   addSong(): Song {
     const newSong = {
-      id: this.makeId(),
+      id: EntityUtils.makeId(),
       name: '',
-      num: this.makeNum(this.currentProject.songs),
+      num: EntityUtils.makeNum(this.currentProject.songs),
       bank: 1,
       songParts: [],
     };
@@ -172,9 +207,9 @@ export class ProjectManagerService {
 
   addSongPart(song: Song): SongPart {
     const newSongPart = {
-      id: this.makeId(),
+      id: EntityUtils.makeId(),
       name: '',
-      num: this.makeNum(song.songParts),
+      num: EntityUtils.makeNum(song.songParts),
       bank: 1,
       sequenceId: null,
     };
@@ -186,15 +221,16 @@ export class ProjectManagerService {
 
   addSequence(): Sequence {
     const newSequence = {
-      id: this.makeId(),
+      id: EntityUtils.makeId(),
       name: '',
-      num: this.makeNum(this.currentProject.sequences),
+      num: EntityUtils.makeNum(this.currentProject.sequences),
       bank: 1,
+      events: [],
       patterns: [],
       timeSignature: {
         step: 4,
         beat: 4,
-        mesure: 1,
+        measure: 1,
       },
       parameters: {},
     };
@@ -212,74 +248,71 @@ export class ProjectManagerService {
   }
 
   changeSequenceNum(sequence: Sequence, num: number): void {
-    this.changeEntityNum(this.currentProject.sequences, sequence, num);
+    EntityUtils.changeEntityNum(this.currentProject.sequences, sequence, num);
   }
 
-  changePatternNum(sequence: Sequence, pattern: Pattern, num: number): void {
-    this.changeEntityNum(sequence.patterns, pattern, num);
+  changeAudioTrackNum(audioTrack: AudioTrack, num: number): void {
+    EntityUtils.changeEntityNum(
+      this.currentProject.audioTracks,
+      audioTrack,
+      num
+    );
+  }
+
+  changePatternNum(pattern: Pattern, num: number): void {
+    EntityUtils.changeEntityNum(this.currentProject.patterns, pattern, num);
   }
 
   changeSongPartNum(song: Song, songPart: SongPart, num: number): void {
-    this.changeEntityNum(song.songParts, songPart, num);
+    EntityUtils.changeEntityNum(song.songParts, songPart, num);
   }
 
   changeSongNum(song: Song, num: number): void {
-    this.changeEntityNum(this.currentProject.songs, song, num);
+    EntityUtils.changeEntityNum(this.currentProject.songs, song, num);
   }
 
-  private changeEntityNum(
-    group: EntityWithNumber[],
-    entity: EntityWithNumber,
-    num: number
-  ): void {
-    const previewWithThatNum = this.getEntityByNum(group, num);
+  // getSequenceByNum(num: number): Sequence {
+  //   this.currentProject.sequences.forEach((lookedSequence: Sequence) => {
+  //     if (lookedSequence.num === null) {
+  //       return lookedSequence;
+  //     }
+  //   });
 
-    if (previewWithThatNum !== null) {
-      previewWithThatNum.num = entity.num;
-    }
-
-    entity.num = num;
-  }
-
-  getSequenceByNum(num: number): Sequence {
-    this.currentProject.sequences.forEach((lookedSequence: Sequence) => {
-      if (lookedSequence.num === null) {
-        return lookedSequence;
-      }
-    });
-
-    return null;
-  }
-
-  private getEntityByNum(
-    group: EntityWithNumber[],
-    num: number
-  ): EntityWithNumber {
-    let found = null;
-
-    group.forEach((entity: EntityWithNumber) => {
-      if (entity.num === num) {
-        found = entity;
-      }
-    });
-
-    return found;
-  }
+  //   return null;
+  // }
 
   removeSequence(sequence: Sequence): void {
     if (this.selectionService.sequenceIsSelected(sequence)) {
       this.selectionService.selectSequence(null);
     }
 
-    this.removeFrom(sequence, this.currentProject.sequences);
+    EntityUtils.removeFrom(sequence, this.currentProject.sequences);
   }
 
-  removePattern(pattern: Pattern, sequence: Sequence): void {
+  removeAudioTrack(audioTrack: AudioTrack): void {
+    console.log(audioTrack);
+    if (this.selectionService.trackIsSelected(audioTrack)) {
+      this.selectionService.selectTrack(null);
+    }
+
+    EntityUtils.removeFrom(audioTrack, this.currentProject.audioTracks);
+  }
+
+  removePattern(pattern: Pattern): void {
     if (this.selectionService.patternIsSelected(pattern)) {
       this.selectionService.selectPattern(null);
     }
 
-    this.removeFrom(pattern, sequence.patterns);
+    // TODO: test
+    // this.currentProject.sequences.forEach((sequence: Sequence) => {
+    //   sequence.patterns.forEach((sequencePattern: SequencePattern) => {
+    //     if (sequencePattern.id === pattern.id) {
+    //       EntityUtils.removeFrom(sequencePattern, sequence.patterns);
+    //     }
+    //   });
+    // });
+
+    EntityUtils.removeFrom(pattern, this.currentProject.patterns);
   }
 
   removeSong(song: Song): void {
@@ -287,7 +320,7 @@ export class ProjectManagerService {
       this.selectionService.selectSong(null);
     }
 
-    this.removeFrom(song, this.currentProject.songs);
+    EntityUtils.removeFrom(song, this.currentProject.songs);
   }
 
   removeSongPart(songPart: SongPart, song: Song): void {
@@ -295,7 +328,7 @@ export class ProjectManagerService {
       this.selectionService.selectSongPart(null);
     }
 
-    this.removeFrom(songPart, song.songParts);
+    EntityUtils.removeFrom(songPart, song.songParts);
   }
 
   removeAvailableResource(resource: Resource): void {
@@ -376,39 +409,6 @@ export class ProjectManagerService {
           reject(message);
         });
     });
-  }
-
-  private removeFrom(toRemove: Entity, group: Entity[]): void {
-    const index = group.indexOf(toRemove, 0);
-
-    if (index >= 0) {
-      group.splice(index, 1);
-    }
-  }
-
-  private makeId(): number {
-    return Math.round(Math.random() * 100000);
-  }
-
-  private makeNum(entities: EntityWithNumber[]): number {
-    let num: number;
-
-    if (entities === undefined) {
-      entities = [];
-      num = 1;
-    } else {
-      let maxNumFound = 0;
-
-      entities.forEach((entity: EntityWithNumber) => {
-        if (entity.num > maxNumFound) {
-          maxNumFound = entity.num;
-        }
-      });
-
-      num = maxNumFound + 1;
-    }
-
-    return num;
   }
 
   private getAudios(): Promise<Resource[]> {

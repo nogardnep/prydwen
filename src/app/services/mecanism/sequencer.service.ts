@@ -1,41 +1,38 @@
-import { Pattern } from './../../../api/entities/Pattern';
-import { Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { OutputsService } from './../io/outputs.service';
+import { Sequencer } from './../../../machine/Sequencer';
+import { Sequence } from './../../../models/entities/Sequence';
+import { AudioPlayerService } from './audio-player.service';
+import { SequencerOutputService } from './sequencer-output.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SequencerService {
-  constructor(private outputsService: OutputsService) {}
+  private sequencer: Sequencer;
 
-  switchMetronome(muted: boolean): void {
-    this.outputsService.getSequencer().switchMetronome(muted);
-  }
-
-  setMetronomeVolume(volume: number): void {
-    this.outputsService.getSequencer().setMetronomeVolume(volume);
+  constructor(
+    private audioPlayerService: AudioPlayerService,
+    private sequencerOutputService: SequencerOutputService
+  ) {
+    this.sequencer = new Sequencer(
+      this.audioPlayerService.getAudioPlayer(),
+      this.sequencerOutputService
+    );
   }
 
   play(): void {
-    this.outputsService.getSequencer().play();
+    this.sequencer.play();
   }
 
   pause(): void {
-    this.outputsService.getSequencer().pause();
+    this.sequencer.pause();
   }
 
   stop(): void {
-    this.outputsService.getSequencer().stop();
+    this.sequencer.stop();
   }
 
-  updatePatternAudio(pattern: Pattern): void {
-    // TODO
-    console.log('TODO');
-  }
-
-  playPattern(pattern: Pattern): void {
-    // TODO
-    console.log('TODO');
+  updateSequence(sequence: Sequence): void {
+    this.sequencer.updateSequence(sequence);
   }
 }

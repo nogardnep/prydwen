@@ -7,9 +7,8 @@
 <div *ngIf="configuration">
   <form (ngSubmit)="onSubmit(form)" #form="ngForm">
     <div>
-      <label for="dataRoot">Data folder</label>
-      <input id="dataRoot" type="text" [(ngModel)]="configuration.dataRoot" name="dataRoot" required />
-      <p>Enter an absolute path to the folder in your computer where will be located projects and resources</p>
+      <label for="configuration-project-root">Projects folder</label>
+      <input id="configuration-project-root" type="text" [(ngModel)]="configuration.projectsRoot" name="projectsRoot" required />
     </div>
 
     <button type="submit" [disabled]="form.invalid">Enregistrer</button>
